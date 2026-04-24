@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
+import { RadioGroup } from "@/components/atoms/Radio";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { ModalShell } from "@/components/organisms/ModalShell";
@@ -278,26 +279,11 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
             <p className="text-sm font-medium text-text-neutral">신고가 접수되었습니다.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            {REPORT_REASONS.map((reason) => {
-              const selected = reportReason === reason;
-              return (
-                <button
-                  key={reason}
-                  type="button"
-                  onClick={() => setReportReason(reason)}
-                  className={
-                    "text-left text-sm p-3 rounded-lg border-none cursor-pointer transition-colors " +
-                    (selected
-                      ? "bg-bg-brand-solid text-text-inverted"
-                      : "bg-bg-neutral-weak text-text-neutral hover:bg-bg-neutral-muted")
-                  }
-                >
-                  {reason}
-                </button>
-              );
-            })}
-          </div>
+          <RadioGroup
+            value={reportReason}
+            onChange={setReportReason}
+            options={REPORT_REASONS.map((reason) => ({ value: reason, label: reason }))}
+          />
         )}
       </ModalShell>
     </div>

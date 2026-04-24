@@ -18,7 +18,7 @@ const variantClass: Record<Variant, string> = {
   primary:
     "bg-bg-brand-solid text-text-inverted hover:bg-bg-brand-solid-pressed active:bg-bg-brand-solid-pressed disabled:bg-bg-neutral-muted disabled:text-text-neutral-subtle",
   secondary:
-    "bg-bg-neutral-muted text-text-neutral hover:bg-bg-neutral-weak active:bg-bg-neutral-muted disabled:bg-bg-neutral-weak disabled:text-text-neutral-subtle",
+    "bg-bg-neutral-weak text-text-neutral hover:bg-bg-neutral-muted active:bg-bg-neutral-muted disabled:bg-bg-neutral-weak disabled:text-text-neutral-subtle",
   ghost:
     "bg-transparent text-text-neutral border border-border-muted hover:bg-bg-neutral-weak disabled:text-text-neutral-subtle disabled:border-border-subtle",
   danger:

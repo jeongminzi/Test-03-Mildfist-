@@ -2,14 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/atoms/Button";
+import { IconButton } from "@/components/atoms/IconButton";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
+import { ContentTile } from "@/components/molecules/ContentTile";
 import { EmptyState } from "@/components/molecules/EmptyState";
-import { LikeButton } from "@/components/molecules/LikeButton";
 import { TabBar } from "@/components/molecules/TabBar";
 import { useToast } from "@/components/molecules/Toast";
 import { ModalShell } from "@/components/organisms/ModalShell";
 import { Pagination } from "@/components/organisms/Pagination";
+
+const TrashIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" /><path d="M14 11v6" />
+    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+  </svg>
+);
 
 type Tab = "all" | "reports";
 
@@ -146,53 +157,35 @@ export default function AdminContents() {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {contents.map((c) => (
-                    <div
+                    <ContentTile
                       key={c.id}
-                      className={
-                        "flex flex-col rounded-card border border-border-muted overflow-hidden " +
-                        (c.is_hidden ? "opacity-50" : "")
-                      }
-                    >
-                      <div className="relative">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={c.image_url}
-                          alt={`${c.user_name}님의 스타일`}
-                          className="w-full h-[140px] object-cover bg-bg-neutral-weak"
-                        />
-                        {c.is_hidden === 1 && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-bg-overlay">
-                            <span className="text-xs font-medium text-text-inverted">숨김 처리됨</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-text-neutral">{c.user_name}</span>
-                          <LikeButton liked={c.likes_count > 0} count={c.likes_count} />
-                        </div>
-                        <p className="text-xs mb-3 text-text-neutral-subtle">
-                          {new Date(c.created_at).toLocaleDateString("ko-KR")}
-                        </p>
-                        <div className="flex gap-2">
+                      imageUrl={c.image_url}
+                      imageAlt={`${c.user_name}님의 스타일`}
+                      authorName={c.user_name}
+                      timestamp={new Date(c.created_at).toLocaleDateString("ko-KR")}
+                      likesCount={c.likes_count}
+                      hidden={c.is_hidden === 1}
+                      actions={
+                        <>
                           <Button
                             size="sm"
-                            variant={c.is_hidden ? "ghost" : "danger"}
+                            variant={c.is_hidden ? "primary" : "secondary"}
                             className="flex-1"
                             onClick={() => handleContentAction(c.id, c.is_hidden ? "unhide" : "hide")}
                           >
                             {c.is_hidden ? "숨김 해제" : "숨김"}
                           </Button>
-                          <Button
+                          <IconButton
                             size="sm"
                             variant="danger"
+                            aria-label="삭제"
                             onClick={() => setDeleteTarget(c)}
                           >
-                            삭제
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                            <TrashIcon />
+                          </IconButton>
+                        </>
+                      }
+                    />
                   ))}
                 </div>
               )}

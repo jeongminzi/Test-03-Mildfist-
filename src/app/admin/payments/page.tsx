@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
+import { KeyValueTable, KeyValueColumn } from "@/components/molecules/KeyValueTable";
 import { TabBar } from "@/components/molecules/TabBar";
 import { useToast } from "@/components/molecules/Toast";
 import { DataTable, DataTableColumn } from "@/components/organisms/DataTable";
@@ -175,50 +176,21 @@ export default function AdminPayments() {
     },
   ];
 
-  const StatTable = <T extends { count: number; total: number }>({
-    headerLabel,
-    rows,
-    rowKey,
-    labelCol,
-    emptyMessage,
-  }: {
-    headerLabel: string;
-    rows: T[];
-    rowKey: (r: T) => string;
-    labelCol: (r: T) => string;
-    emptyMessage: string;
-  }) => (
-    <div className="overflow-hidden rounded-card border border-border-muted">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-bg-neutral-weak text-text-neutral-muted">
-            <th className="text-left px-4 py-3 font-medium">{headerLabel}</th>
-            <th className="text-right px-4 py-3 font-medium">건수</th>
-            <th className="text-right px-4 py-3 font-medium">크레딧 합계</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={3} className="text-center py-8 text-text-neutral-muted">
-                {emptyMessage}
-              </td>
-            </tr>
-          ) : (
-            rows.map((s) => (
-              <tr key={rowKey(s)} className="border-t border-border-muted">
-                <td className="px-4 py-3 text-text-neutral">{labelCol(s)}</td>
-                <td className="px-4 py-3 text-right text-text-neutral-muted">{s.count}건</td>
-                <td className="px-4 py-3 text-right text-text-positive font-medium">
-                  {s.total.toLocaleString()}C
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+  const statColumns = <T extends { count: number; total: number }>(
+    headerLabel: string,
+    labelCol: (r: T) => string,
+  ): KeyValueColumn<T>[] => [
+    { key: "label", header: headerLabel, render: (r) => labelCol(r) },
+    { key: "count", header: "건수", align: "right", render: (r) => `${r.count}건` },
+    {
+      key: "total",
+      header: "크레딧 합계",
+      align: "right",
+      render: (r) => (
+        <span className="text-text-positive font-medium">{r.total.toLocaleString()}C</span>
+      ),
+    },
+  ];
 
   return (
     <div className="p-8 sm:p-10 max-w-5xl">
@@ -264,21 +236,19 @@ export default function AdminPayments() {
           <div className="flex flex-col gap-8">
             <div>
               <h3 className="text-sm font-semibold mb-3 text-text-neutral">일별 매출 (최근 7일)</h3>
-              <StatTable
-                headerLabel="날짜"
+              <KeyValueTable<DailyStat>
                 rows={dailyStats}
                 rowKey={(s) => s.day}
-                labelCol={(s) => s.day}
+                columns={statColumns<DailyStat>("날짜", (s) => s.day)}
                 emptyMessage="최근 7일간 매출이 없습니다."
               />
             </div>
             <div>
               <h3 className="text-sm font-semibold mb-3 text-text-neutral">월별 매출 (최근 3개월)</h3>
-              <StatTable
-                headerLabel="월"
+              <KeyValueTable<MonthlyStat>
                 rows={monthlyStats}
                 rowKey={(s) => s.month}
-                labelCol={(s) => s.month}
+                columns={statColumns<MonthlyStat>("월", (s) => s.month)}
                 emptyMessage="최근 3개월간 매출이 없습니다."
               />
             </div>

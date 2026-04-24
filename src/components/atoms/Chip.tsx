@@ -14,10 +14,10 @@ export function Chip({ selected, leadingIcon, className, children, ...rest }: Ch
       type="button"
       aria-pressed={selected}
       className={cn(
-        "inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-pill transition-colors cursor-pointer",
+        "inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-pill transition-colors cursor-pointer border",
         selected
-          ? "bg-bg-brand-weak text-text-brand"
-          : "bg-bg-neutral-muted text-text-neutral hover:bg-bg-neutral-weak",
+          ? "bg-bg-brand-weak text-text-brand border-border-brand"
+          : "bg-bg-neutral-muted text-text-neutral border-transparent hover:bg-bg-neutral-weak",
         className,
       )}
       {...rest}

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
+import { AdminSidebar, AdminNavItem } from "@/components/organisms/AdminSidebar";
 
 const NAV_ITEMS = [
   {
@@ -73,6 +74,7 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (loading) {
@@ -160,14 +162,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col shrink-0 py-6 px-4 w-[220px] border-r border-border-muted bg-bg-floating">
-        <div className="mb-6 px-3">
+      <AdminSidebar
+        className="hidden lg:flex flex-col w-[220px] py-6 px-4"
+        items={NAV_ITEMS.map<AdminNavItem>((it) => ({
+          key: it.href,
+          href: it.href,
+          icon: it.icon,
+          label: it.label,
+        }))}
+        activeKey={NAV_ITEMS.find((it) => isActive(it.href))?.href}
+        onNavigate={(it) => router.push(it.href)}
+        header={
           <span className="text-xs font-semibold uppercase tracking-wider text-text-neutral-subtle">
             관리자 패널
           </span>
-        </div>
-        <nav className="flex flex-col gap-1">{NAV_ITEMS.map((item) => navItem(item))}</nav>
-      </aside>
+        }
+      />
 
       <div className="flex-1 overflow-auto">{children}</div>
     </div>

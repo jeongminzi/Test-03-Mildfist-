@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Spinner } from "@/components/atoms/Spinner";
+import { Alert } from "@/components/molecules/Alert";
 import { Card } from "@/components/molecules/Card";
 import { FormField } from "@/components/molecules/FormField";
+import { KeyValueTable, KeyValueColumn } from "@/components/molecules/KeyValueTable";
 import { DataTable, DataTableColumn } from "@/components/organisms/DataTable";
 import { Pagination } from "@/components/organisms/Pagination";
 
@@ -152,31 +154,30 @@ export default function AdminCredits() {
       {/* Package Settings */}
       <div className="mb-8">
         <h2 className="text-sm font-semibold mb-3 text-text-neutral">크레딧 패키지 설정</h2>
-        <div className="overflow-hidden rounded-card border border-border-muted">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-bg-neutral-weak text-text-neutral-muted">
-                <th className="text-left px-4 py-3 font-medium">패키지</th>
-                <th className="text-right px-4 py-3 font-medium">크레딧</th>
-                <th className="text-right px-4 py-3 font-medium">가격</th>
-              </tr>
-            </thead>
-            <tbody>
-              {PACKAGES.map((pkg, i) => (
-                <tr key={i} className="border-t border-border-muted">
-                  <td className="px-4 py-3 text-text-neutral">{pkg.credits}크레딧 패키지</td>
-                  <td className="px-4 py-3 text-right text-text-neutral font-medium">{pkg.credits}</td>
-                  <td className="px-4 py-3 text-right text-text-brand">{pkg.price}원</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="px-4 py-2 bg-bg-neutral-weak border-t border-border-muted">
+        <KeyValueTable<typeof PACKAGES[number]>
+          rows={PACKAGES}
+          rowKey={(p) => String(p.credits)}
+          columns={[
+            { key: "name", header: "패키지", render: (p) => `${p.credits}크레딧 패키지` },
+            {
+              key: "credits",
+              header: "크레딧",
+              align: "right",
+              render: (p) => <span className="font-medium">{p.credits}</span>,
+            },
+            {
+              key: "price",
+              header: "가격",
+              align: "right",
+              render: (p) => <span className="text-text-brand">{p.price}원</span>,
+            },
+          ] satisfies KeyValueColumn<typeof PACKAGES[number]>[]}
+          footer={
             <p className="text-xs text-text-neutral-subtle">
               프로토타입 — 패키지 수정 기능은 추후 추가됩니다.
             </p>
-          </div>
-        </div>
+          }
+        />
       </div>
 
       {/* Manual Credit Adjustment */}
@@ -269,16 +270,9 @@ export default function AdminCredits() {
             </FormField>
 
             {message && (
-              <div
-                className={
-                  "px-3 py-2 text-xs rounded-lg " +
-                  (message.type === "success"
-                    ? "bg-bg-positive-weak text-text-positive"
-                    : "bg-bg-brand-weak text-text-critical")
-                }
-              >
+              <Alert tone={message.type === "success" ? "positive" : "critical"}>
                 {message.text}
-              </div>
+              </Alert>
             )}
 
             <Button
