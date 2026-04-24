@@ -15,11 +15,14 @@ const ITEM_POOL = [
   "트렌치 코트",
 ];
 
+/* Vary heights so masonry has something to pack — mimics real-world image sets. */
+const HEIGHTS = [600, 800, 700, 900, 1100, 500, 720, 840];
+
 function makeItems(count: number): StyleCardItem[] {
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     href: "#",
-    imageUrl: `https://picsum.photos/seed/style-${i + 1}/600/${600 + (i % 4) * 80}`,
+    imageUrl: `https://picsum.photos/seed/style-${i + 1}/600/${HEIGHTS[i % HEIGHTS.length]}`,
     userName: NAMES[i % NAMES.length],
     userProfile: null,
     likesCount: (i * 13) % 47,
@@ -35,23 +38,14 @@ export default meta;
 
 type Story = StoryObj<typeof StyleGrid>;
 
-export const Default20: Story = {
+export const TwentyItems: Story = {
   render: () => <StyleGrid items={makeItems(20)} />,
 };
 
-export const Default8: Story = {
-  render: () => <StyleGrid items={makeItems(8)} />,
+export const SixItems: Story = {
+  render: () => <StyleGrid items={makeItems(6)} />,
 };
 
-export const AllRegular: Story = {
-  render: () => <StyleGrid items={makeItems(12)} variantAt={() => "regular"} />,
-};
-
-export const FeatureFirst: Story = {
-  render: () => (
-    <StyleGrid
-      items={makeItems(13)}
-      variantAt={(i) => (i === 0 ? "feature" : i % 5 === 0 ? "wide" : "regular")}
-    />
-  ),
+export const FortyItems: Story = {
+  render: () => <StyleGrid items={makeItems(40)} />,
 };
