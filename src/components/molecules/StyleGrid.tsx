@@ -11,19 +11,20 @@ export interface StyleGridProps {
    so the images dominate, like Midjourney's explore grid. The card itself
    handles its own bottom margin via mb-3/mb-4 + break-inside-avoid. */
 export function StyleGrid({ items, className }: StyleGridProps) {
-  /* Column ramp tuned so cards stay big without going absurdly wide on
-     desktop monitors. Previous "extra-large" ramp held 3 columns until
-     xl (1280), which made cards balloon past 300px on common 1400-1900
-     viewports. Fix: jump to 4 columns at lg (1024) but keep lg's 4 cols
-     all the way through xl (skip the xl step). 2xl finally adds a 5th.
-       <640      2 cols  → ~158px
-       ≥640 sm   3 cols  → ~186px
-       ≥1024 lg  4 cols  → ~228px → grows to ~340px before 2xl
-       ≥1536 2xl 5 cols  → ~284px → grows continuously after */
+  /* From md up we switch from a fixed column count to a column-WIDTH
+     constraint (CSS columns: 16rem). The browser then packs as many
+     ~256px columns as the viewport can fit, so wide monitors fill out
+     instead of leaving empty rails. Mobile and sm keep an explicit
+     count to guarantee at least 2 / 3 columns at small widths.
+       <640      columns-2          → ~158px
+       ≥640 sm   columns-3          → ~186px
+       ≥768 md   column-width:16rem → 3 cols at 768, 4 at 1024,
+                                       5 at 1280, 6 at 1536, 7 at ~1800,
+                                       8 at ~2050, … fills any monitor */
   return (
     <div
       className={cn(
-        "columns-2 sm:columns-3 lg:columns-4 2xl:columns-5",
+        "columns-2 sm:columns-3 md:columns-[16rem]",
         "gap-4 sm:gap-6 [column-fill:balance]",
         className,
       )}
