@@ -1,6 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/atoms/Button";
+import { Spinner } from "@/components/atoms/Spinner";
+import { Card } from "@/components/molecules/Card";
+import { EmptyState } from "@/components/molecules/EmptyState";
+import { LikeButton } from "@/components/molecules/LikeButton";
+import { TabBar } from "@/components/molecules/TabBar";
+import { Pagination } from "@/components/organisms/Pagination";
 
 type Tab = "all" | "reports";
 
@@ -41,11 +48,8 @@ export default function AdminContents() {
       const res = await fetch(`/api/admin/contents?tab=${activeTab}&page=${page}`);
       if (res.ok) {
         const data = await res.json();
-        if (activeTab === "all") {
-          setContents(data.contents || []);
-        } else {
-          setReports(data.reports || []);
-        }
+        if (activeTab === "all") setContents(data.contents || []);
+        else setReports(data.reports || []);
         setTotalPages(data.totalPages || 1);
       }
     } catch {
@@ -70,9 +74,9 @@ export default function AdminContents() {
         if (action === "delete") {
           setContents((prev) => prev.filter((c) => c.id !== styleId));
         } else if (action === "hide") {
-          setContents((prev) => prev.map((c) => c.id === styleId ? { ...c, is_hidden: 1 } : c));
+          setContents((prev) => prev.map((c) => (c.id === styleId ? { ...c, is_hidden: 1 } : c)));
         } else {
-          setContents((prev) => prev.map((c) => c.id === styleId ? { ...c, is_hidden: 0 } : c));
+          setContents((prev) => prev.map((c) => (c.id === styleId ? { ...c, is_hidden: 0 } : c)));
         }
       }
     } catch {
@@ -87,139 +91,91 @@ export default function AdminContents() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
-      if (res.ok) {
-        setReports((prev) => prev.filter((r) => r.id !== reportId));
-      }
+      if (res.ok) setReports((prev) => prev.filter((r) => r.id !== reportId));
     } catch {
       // ignore
     }
   };
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "all", label: "전체 콘텐츠" },
-    { key: "reports", label: "신고 접수" },
-  ];
-
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-xl font-semibold mb-6" style={{ color: "#211922" }}>
-        콘텐츠 관리
-      </h1>
+      <h1 className="text-xl font-semibold mb-6 text-text-neutral">콘텐츠 관리</h1>
 
-      {/* Tabs */}
-      <nav className="flex gap-6 mb-6" style={{ borderBottom: "1px solid #e5e5e0" }}>
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => { setActiveTab(t.key); setPage(1); }}
-            className="pb-3 text-sm font-medium relative"
-            style={{
-              color: activeTab === t.key ? "#e60023" : "#62625b",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            {t.label}
-            {activeTab === t.key && (
-              <span
-                className="absolute left-0 right-0 bottom-0"
-                style={{ height: 2.5, borderRadius: 2, background: "#e60023" }}
-              />
-            )}
-          </button>
-        ))}
-      </nav>
+      <div className="mb-6">
+        <TabBar
+          items={[
+            { key: "all", label: "전체 콘텐츠" },
+            { key: "reports", label: "신고 접수" },
+          ]}
+          value={activeTab}
+          onChange={(k) => {
+            setActiveTab(k);
+            setPage(1);
+          }}
+        />
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#e60023" }}>
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-            <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-          </svg>
+          <Spinner />
         </div>
       ) : (
         <>
-          {/* All Contents */}
           {activeTab === "all" && (
             <>
               {contents.length === 0 ? (
-                <div className="flex items-center justify-center py-16">
-                  <p className="text-sm" style={{ color: "#62625b" }}>콘텐츠가 없습니다.</p>
-                </div>
+                <EmptyState title="콘텐츠가 없습니다" />
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {contents.map((c) => (
                     <div
                       key={c.id}
-                      className="flex flex-col"
-                      style={{
-                        border: "1px solid #e5e5e0",
-                        borderRadius: 16,
-                        overflow: "hidden",
-                        opacity: c.is_hidden ? 0.5 : 1,
-                      }}
+                      className={
+                        "flex flex-col rounded-card border border-border-muted overflow-hidden " +
+                        (c.is_hidden ? "opacity-50" : "")
+                      }
                     >
                       <div className="relative">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={c.image_url}
                           alt="Style"
-                          className="w-full object-cover"
-                          style={{ height: 140, background: "#f6f6f3" }}
+                          className="w-full h-[140px] object-cover bg-bg-neutral-weak"
                         />
                         {c.is_hidden === 1 && (
-                          <div
-                            className="absolute inset-0 flex items-center justify-center"
-                            style={{ background: "rgba(0,0,0,0.4)" }}
-                          >
-                            <span className="text-xs font-medium" style={{ color: "#ffffff" }}>숨김 처리됨</span>
+                          <div className="absolute inset-0 flex items-center justify-center bg-bg-overlay">
+                            <span className="text-xs font-medium text-text-inverted">숨김 처리됨</span>
                           </div>
                         )}
                       </div>
                       <div className="p-3">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium" style={{ color: "#211922" }}>{c.user_name}</span>
-                          <div className="flex items-center gap-1">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="#e60023" stroke="#e60023" strokeWidth="2">
-                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            <span className="text-xs" style={{ color: "#91918c" }}>{c.likes_count}</span>
-                          </div>
+                          <span className="text-xs font-medium text-text-neutral">{c.user_name}</span>
+                          <LikeButton liked={c.likes_count > 0} count={c.likes_count} />
                         </div>
-                        <p className="text-xs mb-3" style={{ color: "#91918c" }}>
+                        <p className="text-xs mb-3 text-text-neutral-subtle">
                           {new Date(c.created_at).toLocaleDateString("ko-KR")}
                         </p>
                         <div className="flex gap-2">
-                          <button
+                          <Button
+                            size="sm"
+                            variant={c.is_hidden ? "ghost" : "danger"}
+                            className="flex-1"
                             onClick={() => handleContentAction(c.id, c.is_hidden ? "unhide" : "hide")}
-                            className="text-xs px-2 py-1 flex-1"
-                            style={{
-                              background: "transparent",
-                              color: c.is_hidden ? "#103c25" : "#e60023",
-                              border: "1px solid " + (c.is_hidden ? "#103c25" : "#e5e5e0"),
-                              borderRadius: 8,
-                              cursor: "pointer",
-                            }}
                           >
                             {c.is_hidden ? "숨김 해제" : "숨김"}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
                             onClick={() => {
                               if (confirm("정말 삭제하시겠습니까?")) {
                                 handleContentAction(c.id, "delete");
                               }
                             }}
-                            className="text-xs px-2 py-1"
-                            style={{
-                              background: "transparent",
-                              color: "#e60023",
-                              border: "1px solid #e5e5e0",
-                              borderRadius: 8,
-                              cursor: "pointer",
-                            }}
                           >
                             삭제
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -229,112 +185,54 @@ export default function AdminContents() {
             </>
           )}
 
-          {/* Reports */}
           {activeTab === "reports" && (
             <>
               {reports.length === 0 ? (
-                <div className="flex items-center justify-center py-16">
-                  <p className="text-sm" style={{ color: "#62625b" }}>접수된 신고가 없습니다.</p>
-                </div>
+                <EmptyState title="접수된 신고가 없습니다" />
               ) : (
-                <div style={{ border: "1px solid #e5e5e0", borderRadius: 16, overflow: "hidden" }}>
-                  <div className="divide-y" style={{ borderColor: "#e5e5e0" }}>
-                    {reports.map((r) => (
-                      <div key={r.id} className="flex items-center gap-4 p-4">
-                        <img
-                          src={r.style_image}
-                          alt="Reported style"
-                          className="shrink-0 object-cover"
-                          style={{ width: 56, height: 56, borderRadius: 8, background: "#f6f6f3" }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm" style={{ color: "#211922" }}>
-                            <strong>{r.reporter_name}</strong>
-                            <span style={{ color: "#62625b" }}> 님이 </span>
-                            <strong>{r.style_owner_name}</strong>
-                            <span style={{ color: "#62625b" }}> 님의 스타일을 신고</span>
-                          </p>
-                          <p className="text-xs mt-0.5" style={{ color: "#62625b" }}>
-                            사유: {r.reason}
-                          </p>
-                          <p className="text-xs mt-0.5" style={{ color: "#91918c" }}>
-                            {new Date(r.created_at).toLocaleDateString("ko-KR")}
-                          </p>
-                        </div>
-                        <div className="flex gap-2 shrink-0">
-                          <button
-                            onClick={() => handleReportAction(r.id, "hide_content")}
-                            className="text-xs px-3 py-1.5"
-                            style={{
-                              background: "transparent",
-                              color: "#e60023",
-                              border: "1px solid #e60023",
-                              borderRadius: 8,
-                              cursor: "pointer",
-                            }}
-                          >
-                            콘텐츠 숨김
-                          </button>
-                          <button
-                            onClick={() => handleReportAction(r.id, "dismiss")}
-                            className="text-xs px-3 py-1.5"
-                            style={{
-                              background: "#e5e5e0",
-                              color: "#211922",
-                              border: "none",
-                              borderRadius: 8,
-                              cursor: "pointer",
-                            }}
-                          >
-                            무시
-                          </button>
-                        </div>
+                <Card padding="none" bordered>
+                  {reports.map((r, i) => (
+                    <div
+                      key={r.id}
+                      className={
+                        "flex items-center gap-4 p-4 " +
+                        (i > 0 ? "border-t border-border-muted" : "")
+                      }
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={r.style_image}
+                        alt="Reported style"
+                        className="shrink-0 w-14 h-14 rounded-md object-cover bg-bg-neutral-weak"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-text-neutral">
+                          <strong>{r.reporter_name}</strong>
+                          <span className="text-text-neutral-muted"> 님이 </span>
+                          <strong>{r.style_owner_name}</strong>
+                          <span className="text-text-neutral-muted"> 님의 스타일을 신고</span>
+                        </p>
+                        <p className="text-xs mt-0.5 text-text-neutral-muted">사유: {r.reason}</p>
+                        <p className="text-xs mt-0.5 text-text-neutral-subtle">
+                          {new Date(r.created_at).toLocaleDateString("ko-KR")}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button size="sm" variant="danger" onClick={() => handleReportAction(r.id, "hide_content")}>
+                          콘텐츠 숨김
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={() => handleReportAction(r.id, "dismiss")}>
+                          무시
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
               )}
             </>
           )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 py-6">
-              <button
-                onClick={() => setPage(Math.max(1, page - 1))}
-                disabled={page <= 1}
-                className="text-xs px-3 py-1"
-                style={{
-                  background: "#e5e5e0",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: page <= 1 ? "not-allowed" : "pointer",
-                  opacity: page <= 1 ? 0.5 : 1,
-                  color: "#211922",
-                }}
-              >
-                이전
-              </button>
-              <span className="text-xs" style={{ color: "#62625b" }}>
-                {page} / {totalPages}
-              </span>
-              <button
-                onClick={() => setPage(Math.min(totalPages, page + 1))}
-                disabled={page >= totalPages}
-                className="text-xs px-3 py-1"
-                style={{
-                  background: "#e5e5e0",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: page >= totalPages ? "not-allowed" : "pointer",
-                  opacity: page >= totalPages ? 0.5 : 1,
-                  color: "#211922",
-                }}
-              >
-                다음
-              </button>
-            </div>
-          )}
+          {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={setPage} />}
         </>
       )}
     </div>

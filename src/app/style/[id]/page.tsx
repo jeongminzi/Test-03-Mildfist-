@@ -4,6 +4,11 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import { Avatar } from "@/components/atoms/Avatar";
+import { Button } from "@/components/atoms/Button";
+import { Spinner } from "@/components/atoms/Spinner";
+import { Card } from "@/components/molecules/Card";
+import { ModalShell } from "@/components/organisms/ModalShell";
 
 interface FashionItem {
   category: string;
@@ -68,7 +73,6 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
         const data = await res.json();
         setStyle(data.style);
         setLikesCount(data.style.likes_count);
-
         try {
           const parsed = JSON.parse(data.style.analysis_json);
           setItems(parsed.items || []);
@@ -89,7 +93,6 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
       router.push(`/login?redirect=/style/${id}`);
       return;
     }
-
     try {
       const res = await fetch(`/api/styles/${id}/like`, { method: "POST" });
       const data = await res.json();
@@ -135,10 +138,7 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#e60023" }}>
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        </svg>
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -146,15 +146,14 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
   if (!style) return null;
 
   return (
-    <div className="flex-1" style={{ background: "#ffffff" }}>
+    <div className="flex-1 bg-bg-default">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-        {/* Back button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm mb-6 no-underline"
-          style={{ color: "#62625b" }}
+          className="inline-flex items-center gap-2 text-sm mb-6 no-underline text-text-neutral-muted hover:text-text-neutral"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
           돌아가기
@@ -162,10 +161,8 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image */}
-          <div
-            className="overflow-hidden"
-            style={{ borderRadius: 20, background: "#f6f6f3" }}
-          >
+          <div className="overflow-hidden rounded-card bg-bg-neutral-weak">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={style.image_url}
               alt={`Style by ${style.user_name}`}
@@ -175,75 +172,42 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Info */}
           <div className="flex flex-col gap-6">
-            {/* User info */}
             <div className="flex items-center gap-3">
-              <div
-                className="flex items-center justify-center text-sm font-semibold"
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  background: "#e5e5e0",
-                  color: "#211922",
-                }}
-              >
-                {style.user_name.charAt(0)}
-              </div>
+              <Avatar name={style.user_name} src={style.user_profile} size="md" />
               <div>
-                <p className="text-sm font-medium" style={{ color: "#211922" }}>
-                  {style.user_name}
-                </p>
-                <p className="text-xs" style={{ color: "#91918c" }}>
+                <p className="text-sm font-medium text-text-neutral">{style.user_name}</p>
+                <p className="text-xs text-text-neutral-subtle">
                   {new Date(style.created_at).toLocaleDateString("ko-KR")}
                 </p>
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center gap-3">
-              <button
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                size="sm"
+                variant={liked ? "primary" : "secondary"}
                 onClick={handleLike}
-                className="flex items-center gap-2 text-sm font-medium"
-                style={{
-                  background: liked ? "#e60023" : "#f6f6f3",
-                  color: liked ? "#ffffff" : "#211922",
-                  borderRadius: 16,
-                  padding: "8px 20px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill={liked ? "currentColor" : "none"}
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24"
+                  fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
                 {likesCount}
-              </button>
+              </Button>
 
-              <Link
-                href={`/fitting?style=${style.id}`}
-                className="flex items-center gap-2 text-sm font-medium no-underline"
-                style={{
-                  background: "#e60023",
-                  color: "#ffffff",
-                  borderRadius: 16,
-                  padding: "8px 20px",
-                }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 3v12" />
-                  <path d="M18 9a3 3 0 0 1-3 3H6" />
-                </svg>
-                가상 피팅 해보기
+              <Link href={`/fitting?style=${style.id}`} className="no-underline">
+                <Button size="sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 3v12" />
+                    <path d="M18 9a3 3 0 0 1-3 3H6" />
+                  </svg>
+                  가상 피팅 해보기
+                </Button>
               </Link>
 
               <button
+                type="button"
                 onClick={() => {
                   if (!user) {
                     router.push(`/login?redirect=/style/${id}`);
@@ -251,15 +215,10 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
                   }
                   setReportModalOpen(true);
                 }}
-                className="flex items-center gap-1 text-xs"
-                style={{
-                  background: "none",
-                  color: "#91918c",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className="ml-auto inline-flex items-center gap-1 text-xs text-text-neutral-subtle bg-transparent border-none cursor-pointer hover:text-text-neutral-muted"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
                   <line x1="4" y1="22" x2="4" y2="15" />
                 </svg>
@@ -267,47 +226,25 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
               </button>
             </div>
 
-            {/* Items */}
             {items.length > 0 && (
               <div className="flex flex-col gap-3">
-                <h3 className="text-sm font-semibold" style={{ color: "#211922" }}>
+                <h3 className="text-sm font-semibold text-text-neutral">
                   인식된 아이템 ({items.length})
                 </h3>
                 {items.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 p-3"
-                    style={{ background: "#f6f6f3", borderRadius: 16 }}
-                  >
-                    <span className="text-xl mt-0.5">
-                      {CATEGORY_EMOJI[item.category] ?? "👗"}
-                    </span>
+                  <Card key={i} surface="weak" padding="sm" className="flex items-start gap-3">
+                    <span className="text-xl mt-0.5">{CATEGORY_EMOJI[item.category] ?? "👗"}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium" style={{ color: "#211922" }}>
-                        {item.name}
-                      </p>
-                      <p className="text-xs mt-0.5" style={{ color: "#62625b" }}>
+                      <p className="text-sm font-medium text-text-neutral">{item.name}</p>
+                      <p className="text-xs mt-0.5 text-text-neutral-muted">
                         {item.color} · {item.style}
                       </p>
-                      <p className="text-xs mt-0.5" style={{ color: "#91918c" }}>
-                        {item.description}
-                      </p>
+                      <p className="text-xs mt-0.5 text-text-neutral-subtle">{item.description}</p>
                     </div>
-                    <button
-                      onClick={() => handleSearchItem(item)}
-                      className="shrink-0 text-xs font-medium"
-                      style={{
-                        background: "#e5e5e0",
-                        color: "#211922",
-                        borderRadius: 12,
-                        padding: "6px 12px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
+                    <Button size="sm" variant="secondary" onClick={() => handleSearchItem(item)}>
                       유사 상품 보기
-                    </button>
-                  </div>
+                    </Button>
+                  </Card>
                 ))}
               </div>
             )}
@@ -316,85 +253,52 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
       </div>
 
       {/* Report Modal */}
-      {reportModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4"
-          style={{ background: "rgba(0,0,0,0.4)" }}
-          onClick={() => setReportModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-sm p-6"
-            style={{ background: "#ffffff", borderRadius: 20 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {reportDone ? (
-              <div className="flex flex-col items-center gap-3 py-4">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e60023" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <p className="text-sm font-medium" style={{ color: "#211922" }}>
-                  신고가 접수되었습니다.
-                </p>
-              </div>
-            ) : (
-              <>
-                <h3 className="text-base font-semibold mb-4" style={{ color: "#211922" }}>
-                  스타일 신고
-                </h3>
-                <div className="flex flex-col gap-2 mb-4">
-                  {REPORT_REASONS.map((reason) => (
-                    <button
-                      key={reason}
-                      onClick={() => setReportReason(reason)}
-                      className="text-left text-sm p-3 transition-colors"
-                      style={{
-                        background: reportReason === reason ? "#e60023" : "#f6f6f3",
-                        color: reportReason === reason ? "#ffffff" : "#211922",
-                        borderRadius: 12,
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {reason}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setReportModalOpen(false)}
-                    className="flex-1 text-sm font-medium"
-                    style={{
-                      background: "#e5e5e0",
-                      color: "#211922",
-                      borderRadius: 16,
-                      padding: "10px",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    취소
-                  </button>
-                  <button
-                    onClick={handleReport}
-                    disabled={!reportReason || reportSubmitting}
-                    className="flex-1 text-sm font-medium"
-                    style={{
-                      background: !reportReason || reportSubmitting ? "#e5e5e0" : "#e60023",
-                      color: !reportReason || reportSubmitting ? "#91918c" : "#ffffff",
-                      borderRadius: 16,
-                      padding: "10px",
-                      border: "none",
-                      cursor: !reportReason || reportSubmitting ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {reportSubmitting ? "처리 중..." : "신고하기"}
-                  </button>
-                </div>
-              </>
-            )}
+      <ModalShell
+        open={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        title={reportDone ? undefined : "스타일 신고"}
+        footer={
+          reportDone ? undefined : (
+            <>
+              <Button variant="secondary" onClick={() => setReportModalOpen(false)}>취소</Button>
+              <Button onClick={handleReport} disabled={!reportReason} loading={reportSubmitting}>
+                {reportSubmitting ? "처리 중..." : "신고하기"}
+              </Button>
+            </>
+          )
+        }
+      >
+        {reportDone ? (
+          <div className="flex flex-col items-center gap-3 py-2">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text-brand">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <p className="text-sm font-medium text-text-neutral">신고가 접수되었습니다.</p>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-col gap-2">
+            {REPORT_REASONS.map((reason) => {
+              const selected = reportReason === reason;
+              return (
+                <button
+                  key={reason}
+                  type="button"
+                  onClick={() => setReportReason(reason)}
+                  className={
+                    "text-left text-sm p-3 rounded-lg border-none cursor-pointer transition-colors " +
+                    (selected
+                      ? "bg-bg-brand-solid text-text-inverted"
+                      : "bg-bg-neutral-weak text-text-neutral hover:bg-bg-neutral-muted")
+                  }
+                >
+                  {reason}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </ModalShell>
     </div>
   );
 }

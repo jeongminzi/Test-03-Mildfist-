@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, Suspense, type DragEvent } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
 import { resizeAndConvertToBase64 } from "@/lib/image-utils";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import { Button } from "@/components/atoms/Button";
+import { Chip } from "@/components/atoms/Chip";
+import { Input } from "@/components/atoms/Input";
+import { Spinner } from "@/components/atoms/Spinner";
+import { Card } from "@/components/molecules/Card";
+import { FileUploadArea } from "@/components/molecules/FileUploadArea";
 
 const CATEGORY_EMOJI: Record<string, string> = {
   상의: "👕",
@@ -27,14 +33,13 @@ const fileToBase64 = resizeAndConvertToBase64;
 
 export default function FittingPage() {
   return (
-    <Suspense fallback={
-      <div className="flex-1 flex items-center justify-center">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#e60023" }}>
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-        </svg>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center">
+          <Spinner size="lg" />
+        </div>
+      }
+    >
       <FittingPageInner />
     </Suspense>
   );
@@ -54,13 +59,7 @@ function FittingPageInner() {
   const [fittingResult, setFittingResult] = useState<string | null>(null);
   const [fitLoading, setFitLoading] = useState(false);
   const [fitError, setFitError] = useState<string | null>(null);
-  const [myDragging, setMyDragging] = useState(false);
-  const [styleDragging, setStyleDragging] = useState(false);
 
-  const myInputRef = useRef<HTMLInputElement>(null);
-  const styleInputRef = useRef<HTMLInputElement>(null);
-
-  // Load style if coming from style detail page
   useEffect(() => {
     if (!styleId) return;
     async function loadStyle() {
@@ -70,16 +69,12 @@ function FittingPageInner() {
         const data = await res.json();
         const style = data.style;
         setStylePreview(style.image_url);
-        // For base64 data URLs, extract the base64 part
         if (style.image_url.startsWith("data:")) {
           setStyleImage(style.image_url.split(",")[1]);
         }
-        // Load analysis items
         try {
           const parsed = JSON.parse(style.analysis_json);
-          if (parsed.items) {
-            setRecognizedItems(parsed.items);
-          }
+          if (parsed.items) setRecognizedItems(parsed.items);
         } catch {
           // ignore
         }
@@ -99,7 +94,6 @@ function FittingPageInner() {
     setStylePreview(URL.createObjectURL(file));
     const b64 = await fileToBase64(file);
     setStyleImage(b64);
-    // Auto-recognize items
     try {
       const res = await fetch("/api/recognize", {
         method: "POST",
@@ -118,7 +112,7 @@ function FittingPageInner() {
   const toggleItem = useCallback((category: string, name: string) => {
     const label = `${category}: ${name}`;
     setSelectedItems((prev) =>
-      prev.includes(label) ? prev.filter((n) => n !== label) : [...prev, label]
+      prev.includes(label) ? prev.filter((n) => n !== label) : [...prev, label],
     );
   }, []);
 
@@ -128,7 +122,6 @@ function FittingPageInner() {
     setFitError(null);
     setFittingResult(null);
 
-    // Use credits
     try {
       const creditRes = await fetch("/api/credits/use", {
         method: "POST",
@@ -160,7 +153,6 @@ function FittingPageInner() {
       const data = await res.json();
       if (data.image) {
         setFittingResult(`data:image/png;base64,${data.image}`);
-        // Save fitting result
         try {
           await fetch("/api/fittings", {
             method: "POST",
@@ -173,9 +165,8 @@ function FittingPageInner() {
             }),
           });
         } catch {
-          // ignore save error
+          // ignore
         }
-        // Refresh user credits
         refresh();
       } else {
         throw new Error("이미지 생성 결과가 없습니다.");
@@ -187,23 +178,15 @@ function FittingPageInner() {
     }
   }, [myImage, styleImage, selectedItems, refresh]);
 
-  const makeDragHandlers = (setDragging: (v: boolean) => void) => ({
-    onDragEnter: (e: DragEvent) => { e.preventDefault(); setDragging(true); },
-    onDragLeave: (e: DragEvent) => { e.preventDefault(); setDragging(false); },
-    onDragOver: (e: DragEvent) => e.preventDefault(),
-  });
-
   const disabled = !myImage || !styleImage || selectedItems.length === 0 || fitLoading;
 
   return (
-    <div className="flex-1" style={{ background: "#ffffff" }}>
+    <div className="flex-1 bg-bg-default">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col gap-6">
           <div>
-            <h1 className="text-lg font-semibold" style={{ color: "#211922", letterSpacing: "-0.3px" }}>
-              가상 피팅
-            </h1>
-            <p className="mt-1 text-sm" style={{ color: "#62625b" }}>
+            <h1 className="text-lg font-semibold text-text-neutral">가상 피팅</h1>
+            <p className="mt-1 text-sm text-text-neutral-muted">
               내 사진과 스타일 사진을 업로드한 후, 입혀볼 아이템을 선택하세요.
             </p>
           </div>
@@ -211,124 +194,73 @@ function FittingPageInner() {
           {/* Two upload areas */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium" style={{ color: "#211922" }}>내 사진</span>
-              <div
-                onClick={() => myInputRef.current?.click()}
-                {...makeDragHandlers(setMyDragging)}
-                onDrop={(e: DragEvent) => {
-                  e.preventDefault();
-                  setMyDragging(false);
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleMyFile(file);
-                }}
-                style={{
-                  borderRadius: 20,
-                  border: myDragging ? "2px dashed #e60023" : "2px dashed #91918c",
-                  backgroundColor: myDragging ? "#fef2f2" : "#f6f6f3",
-                  cursor: "pointer",
-                  minHeight: 200,
-                }}
-                className="flex flex-col items-center justify-center p-6 overflow-hidden"
-              >
-                <input ref={myInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleMyFile(f); }} />
-                {myPreview ? (
-                  <img src={myPreview} alt="My photo" className="max-h-48 object-contain" style={{ borderRadius: 12 }} />
-                ) : (
-                  <>
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#91918c" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
-                    <p className="mt-2 text-xs font-medium" style={{ color: "#211922" }}>내 사진 업로드</p>
-                    <p className="text-xs mt-0.5" style={{ color: "#91918c" }}>정면 전신 사진 권장</p>
-                  </>
-                )}
-              </div>
+              <span className="text-xs font-medium text-text-neutral">내 사진</span>
+              {myPreview ? (
+                <div className="flex justify-center p-3 rounded-card bg-bg-neutral-weak">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={myPreview} alt="My photo" className="max-h-48 object-contain rounded-lg" />
+                </div>
+              ) : (
+                <FileUploadArea
+                  onSelect={(files) => files[0] && handleMyFile(files[0])}
+                  hint="정면 전신 사진 권장"
+                />
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium" style={{ color: "#211922" }}>스타일 사진</span>
-              <div
-                onClick={() => !styleId ? styleInputRef.current?.click() : undefined}
-                {...makeDragHandlers(setStyleDragging)}
-                onDrop={(e: DragEvent) => {
-                  e.preventDefault();
-                  setStyleDragging(false);
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleStyleFile(file);
-                }}
-                style={{
-                  borderRadius: 20,
-                  border: styleDragging ? "2px dashed #e60023" : "2px dashed #91918c",
-                  backgroundColor: styleDragging ? "#fef2f2" : "#f6f6f3",
-                  cursor: "pointer",
-                  minHeight: 200,
-                }}
-                className="flex flex-col items-center justify-center p-6 overflow-hidden"
-              >
-                <input ref={styleInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleStyleFile(f); }} />
-                {stylePreview ? (
-                  <img src={stylePreview} alt="Style" className="max-h-48 object-contain" style={{ borderRadius: 12 }} />
-                ) : (
-                  <>
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#91918c" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" /></svg>
-                    <p className="mt-2 text-xs font-medium" style={{ color: "#211922" }}>스타일 사진 업로드</p>
-                    <p className="text-xs mt-0.5" style={{ color: "#91918c" }}>참고할 코디 사진</p>
-                  </>
-                )}
-              </div>
+              <span className="text-xs font-medium text-text-neutral">스타일 사진</span>
+              {stylePreview ? (
+                <div className="flex justify-center p-3 rounded-card bg-bg-neutral-weak">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={stylePreview} alt="Style" className="max-h-48 object-contain rounded-lg" />
+                </div>
+              ) : (
+                <FileUploadArea
+                  onSelect={(files) => files[0] && handleStyleFile(files[0])}
+                  hint="참고할 코디 사진"
+                  disabled={!!styleId}
+                />
+              )}
             </div>
           </div>
 
           {/* Item selection */}
-          {recognizedItems.length > 0 && (
+          {recognizedItems.length > 0 ? (
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-medium" style={{ color: "#211922" }}>피팅할 아이템 선택</span>
+              <span className="text-xs font-medium text-text-neutral">피팅할 아이템 선택</span>
               <div className="flex flex-wrap gap-2">
                 {recognizedItems.map((item, i) => {
                   const label = `${item.category}: ${item.name}`;
                   const selected = selectedItems.includes(label);
                   return (
-                    <button
+                    <Chip
                       key={i}
+                      selected={selected}
                       onClick={() => toggleItem(item.category, item.name)}
-                      className="flex items-center gap-1.5 text-xs font-medium"
-                      style={{
-                        background: selected ? "#e60023" : "#e5e5e0",
-                        color: selected ? "#ffffff" : "#211922",
-                        borderRadius: 12,
-                        padding: "6px 14px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
                     >
                       {CATEGORY_EMOJI[item.category] ?? "👗"} {item.name}
-                    </button>
+                    </Chip>
                   );
                 })}
               </div>
             </div>
-          )}
-
-          {recognizedItems.length === 0 && (
+          ) : (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3 p-4" style={{ background: "#f6f6f3", borderRadius: 16 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#91918c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              <Card surface="weak" padding="md" className="flex items-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+                  strokeLinecap="round" strokeLinejoin="round" className="text-text-neutral-subtle shrink-0">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <p className="text-xs" style={{ color: "#62625b" }}>
+                <p className="text-xs text-text-neutral-muted">
                   스타일 사진을 업로드하면 AI가 자동으로 아이템을 인식합니다. 직접 입력도 가능합니다.
                 </p>
-              </div>
-              <span className="text-xs font-medium" style={{ color: "#211922" }}>피팅할 아이템 직접 입력</span>
-              <input
-                type="text"
-                placeholder='예: 검정 가죽 자켓, 흰색 티셔츠 (쉼표로 구분)'
-                className="text-sm outline-none"
-                style={{
-                  border: "1px solid #91918c",
-                  borderRadius: 16,
-                  padding: "10px 16px",
-                  color: "#211922",
-                  background: "#ffffff",
-                }}
+              </Card>
+              <span className="text-xs font-medium text-text-neutral">피팅할 아이템 직접 입력</span>
+              <Input
+                placeholder="예: 검정 가죽 자켓, 흰색 티셔츠 (쉼표로 구분)"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const val = (e.target as HTMLInputElement).value.trim();
@@ -343,59 +275,31 @@ function FittingPageInner() {
             </div>
           )}
 
-          {/* Fitting button */}
-          <button
-            onClick={handleFitting}
-            disabled={disabled}
-            className="self-stretch flex items-center justify-center gap-2 text-sm font-medium"
-            style={{
-              background: disabled ? "#e5e5e0" : "#e60023",
-              color: disabled ? "#91918c" : "#ffffff",
-              borderRadius: 16,
-              padding: "12px 20px",
-              border: "none",
-              cursor: disabled ? "not-allowed" : "pointer",
-            }}
-          >
-            {fitLoading ? (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#e60023" }}>
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-                피팅 중... (최대 30초 소요)
-              </>
-            ) : (
+          <Button onClick={handleFitting} disabled={disabled} loading={fitLoading} fullWidth>
+            {fitLoading ? "피팅 중... (최대 30초 소요)" : (
               <>
                 피팅 시작
-                <span className="text-xs opacity-70">(1 크레딧)</span>
+                <span className="text-xs opacity-70 ml-1">(1 크레딧)</span>
               </>
             )}
-          </button>
+          </Button>
 
-          {fitError && <p className="text-sm" style={{ color: "#e60023" }}>{fitError}</p>}
+          {fitError && <p className="text-sm text-text-critical">{fitError}</p>}
 
-          {/* Result */}
           {fittingResult && (
             <div className="flex flex-col items-center gap-4">
-              <h3 className="text-sm font-semibold self-start" style={{ color: "#211922" }}>
-                피팅 결과
-              </h3>
-              <div className="w-full overflow-hidden" style={{ borderRadius: 20, border: "1px solid #e5e5e0" }}>
+              <h3 className="text-sm font-semibold self-start text-text-neutral">피팅 결과</h3>
+              <div className="w-full overflow-hidden rounded-card border border-border-muted">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={fittingResult} alt="피팅 결과" className="w-full object-contain" />
               </div>
               <a
                 href={fittingResult}
                 download="mildfist-fitting-result.png"
-                className="flex items-center gap-2 text-xs font-medium no-underline"
-                style={{
-                  background: "#e5e5e0",
-                  color: "#211922",
-                  borderRadius: 12,
-                  padding: "8px 20px",
-                }}
+                className="inline-flex items-center gap-2 text-xs font-medium no-underline px-5 py-2 rounded-lg bg-bg-neutral-muted text-text-neutral hover:bg-bg-neutral-weak"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />

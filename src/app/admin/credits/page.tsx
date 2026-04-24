@@ -1,6 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/atoms/Button";
+import { Input } from "@/components/atoms/Input";
+import { Spinner } from "@/components/atoms/Spinner";
+import { Card } from "@/components/molecules/Card";
+import { FormField } from "@/components/molecules/FormField";
+import { DataTable, DataTableColumn } from "@/components/organisms/DataTable";
+import { Pagination } from "@/components/organisms/Pagination";
 
 interface Transaction {
   id: number;
@@ -32,7 +39,6 @@ export default function AdminCredits() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Manual adjustment
   const [userSearch, setUserSearch] = useState("");
   const [searchResults, setSearchResults] = useState<SearchedUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<SearchedUser | null>(null);
@@ -73,7 +79,7 @@ export default function AdminCredits() {
             name: m.name,
             email: m.email,
             credits: m.credits,
-          }))
+          })),
         );
       }
     } catch {
@@ -119,267 +125,193 @@ export default function AdminCredits() {
     }
   };
 
+  const txColumns: DataTableColumn<Transaction>[] = [
+    { key: "user", header: "회원", render: (r) => <span className="font-medium">{r.user_name}</span> },
+    {
+      key: "amount",
+      header: "수량",
+      align: "right",
+      render: (r) => <span className="text-text-positive font-medium">+{r.amount}</span>,
+    },
+    { key: "desc", header: "내용", render: (r) => <span className="text-text-neutral-muted">{r.description}</span> },
+    {
+      key: "date",
+      header: "일시",
+      render: (r) => (
+        <span className="text-text-neutral-subtle">
+          {new Date(r.created_at).toLocaleDateString("ko-KR")}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-xl font-semibold mb-6" style={{ color: "#211922" }}>
-        크레딧 관리
-      </h1>
+      <h1 className="text-xl font-semibold mb-6 text-text-neutral">크레딧 관리</h1>
 
       {/* Package Settings */}
       <div className="mb-8">
-        <h2 className="text-sm font-semibold mb-3" style={{ color: "#211922" }}>
-          크레딧 패키지 설정
-        </h2>
-        <div style={{ border: "1px solid #e5e5e0", borderRadius: 16, overflow: "hidden" }}>
+        <h2 className="text-sm font-semibold mb-3 text-text-neutral">크레딧 패키지 설정</h2>
+        <div className="overflow-hidden rounded-card border border-border-muted">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ background: "#f6f6f3" }}>
-                <th className="text-left px-4 py-3 font-medium" style={{ color: "#62625b" }}>패키지</th>
-                <th className="text-right px-4 py-3 font-medium" style={{ color: "#62625b" }}>크레딧</th>
-                <th className="text-right px-4 py-3 font-medium" style={{ color: "#62625b" }}>가격</th>
+              <tr className="bg-bg-neutral-weak text-text-neutral-muted">
+                <th className="text-left px-4 py-3 font-medium">패키지</th>
+                <th className="text-right px-4 py-3 font-medium">크레딧</th>
+                <th className="text-right px-4 py-3 font-medium">가격</th>
               </tr>
             </thead>
             <tbody>
               {PACKAGES.map((pkg, i) => (
-                <tr key={i} style={{ borderTop: "1px solid #e5e5e0" }}>
-                  <td className="px-4 py-3" style={{ color: "#211922" }}>{pkg.credits}크레딧 패키지</td>
-                  <td className="px-4 py-3 text-right" style={{ color: "#211922", fontWeight: 500 }}>{pkg.credits}</td>
-                  <td className="px-4 py-3 text-right" style={{ color: "#e60023" }}>{pkg.price}원</td>
+                <tr key={i} className="border-t border-border-muted">
+                  <td className="px-4 py-3 text-text-neutral">{pkg.credits}크레딧 패키지</td>
+                  <td className="px-4 py-3 text-right text-text-neutral font-medium">{pkg.credits}</td>
+                  <td className="px-4 py-3 text-right text-text-brand">{pkg.price}원</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="px-4 py-2" style={{ background: "#f6f6f3", borderTop: "1px solid #e5e5e0" }}>
-            <p className="text-xs" style={{ color: "#91918c" }}>프로토타입 — 패키지 수정 기능은 추후 추가됩니다.</p>
+          <div className="px-4 py-2 bg-bg-neutral-weak border-t border-border-muted">
+            <p className="text-xs text-text-neutral-subtle">
+              프로토타입 — 패키지 수정 기능은 추후 추가됩니다.
+            </p>
           </div>
         </div>
       </div>
 
       {/* Manual Credit Adjustment */}
       <div className="mb-8">
-        <h2 className="text-sm font-semibold mb-3" style={{ color: "#211922" }}>
-          수동 크레딧 지급/회수
-        </h2>
-        <form
-          onSubmit={handleManualAdjust}
-          className="p-5"
-          style={{ border: "1px solid #e5e5e0", borderRadius: 16 }}
-        >
-          {/* User Search */}
-          <div className="mb-4">
-            <label className="text-xs font-medium mb-1.5 block" style={{ color: "#62625b" }}>대상 회원</label>
-            {selectedUser ? (
-              <div className="flex items-center gap-2">
-                <div
-                  className="flex items-center gap-2 flex-1 px-3 py-2"
-                  style={{ background: "#f6f6f3", borderRadius: 10 }}
-                >
-                  <span className="text-sm font-medium" style={{ color: "#211922" }}>{selectedUser.name}</span>
-                  <span className="text-xs" style={{ color: "#62625b" }}>{selectedUser.email}</span>
-                  <span className="text-xs" style={{ color: "#91918c" }}>잔액: {selectedUser.credits}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUser(null);
-                    setSearchResults([]);
-                    setUserSearch("");
-                  }}
-                  className="text-xs px-2 py-1"
-                  style={{ background: "#e5e5e0", borderRadius: 8, border: "none", cursor: "pointer", color: "#211922" }}
-                >
-                  변경
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); searchUsers(); } }}
-                    placeholder="이름 또는 이메일 검색..."
-                    className="flex-1 text-sm px-3 py-2 outline-none"
-                    style={{ background: "#f6f6f3", borderRadius: 10, border: "none", color: "#211922" }}
-                  />
-                  <button
-                    type="button"
-                    onClick={searchUsers}
-                    className="text-xs px-3 py-2"
-                    style={{ background: "#e5e5e0", borderRadius: 10, border: "none", cursor: "pointer", color: "#211922" }}
-                  >
-                    검색
-                  </button>
-                </div>
-                {searchResults.length > 0 && (
-                  <div
-                    className="mt-2 overflow-hidden"
-                    style={{ border: "1px solid #e5e5e0", borderRadius: 10 }}
-                  >
-                    {searchResults.map((u) => (
-                      <button
-                        key={u.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedUser(u);
-                          setSearchResults([]);
-                        }}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-left text-sm transition-colors"
-                        style={{ background: "transparent", border: "none", cursor: "pointer", borderBottom: "1px solid #e5e5e0" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#f6f6f3")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <span style={{ color: "#211922", fontWeight: 500 }}>{u.name}</span>
-                        <span className="text-xs" style={{ color: "#62625b" }}>{u.email}</span>
-                        <span className="text-xs ml-auto" style={{ color: "#91918c" }}>잔액: {u.credits}</span>
-                      </button>
-                    ))}
+        <h2 className="text-sm font-semibold mb-3 text-text-neutral">수동 크레딧 지급/회수</h2>
+        <Card padding="lg" bordered>
+          <form onSubmit={handleManualAdjust} className="flex flex-col gap-4">
+            {/* User search / selection */}
+            <div>
+              <label className="text-xs font-medium mb-1.5 block text-text-neutral-muted">대상 회원</label>
+              {selectedUser ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-lg bg-bg-neutral-weak">
+                    <span className="text-sm font-medium text-text-neutral">{selectedUser.name}</span>
+                    <span className="text-xs text-text-neutral-muted">{selectedUser.email}</span>
+                    <span className="text-xs text-text-neutral-subtle">잔액: {selectedUser.credits}</span>
                   </div>
-                )}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setSearchResults([]);
+                      setUserSearch("");
+                    }}
+                  >
+                    변경
+                  </Button>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex gap-2">
+                    <Input
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          searchUsers();
+                        }
+                      }}
+                      placeholder="이름 또는 이메일 검색..."
+                    />
+                    <Button type="button" variant="secondary" onClick={searchUsers}>
+                      검색
+                    </Button>
+                  </div>
+                  {searchResults.length > 0 && (
+                    <div className="mt-2 overflow-hidden rounded-lg border border-border-muted">
+                      {searchResults.map((u) => (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedUser(u);
+                            setSearchResults([]);
+                          }}
+                          className="flex items-center gap-2 w-full px-3 py-2 text-left text-sm bg-transparent border-none cursor-pointer transition-colors hover:bg-bg-neutral-weak border-b border-border-muted last:border-b-0"
+                        >
+                          <span className="text-text-neutral font-medium">{u.name}</span>
+                          <span className="text-xs text-text-neutral-muted">{u.email}</span>
+                          <span className="text-xs ml-auto text-text-neutral-subtle">잔액: {u.credits}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <FormField id="amount" label="수량 (양수: 지급, 음수: 회수)">
+              <Input
+                id="amount"
+                type="number"
+                value={adjustAmount}
+                onChange={(e) => setAdjustAmount(e.target.value)}
+                placeholder="예: 50 또는 -20"
+              />
+            </FormField>
+
+            <FormField id="reason" label="사유">
+              <Input
+                id="reason"
+                type="text"
+                value={adjustReason}
+                onChange={(e) => setAdjustReason(e.target.value)}
+                placeholder="예: 이벤트 보상, 오류 보정 등"
+              />
+            </FormField>
+
+            {message && (
+              <div
+                className={
+                  "px-3 py-2 text-xs rounded-lg " +
+                  (message.type === "success"
+                    ? "bg-bg-positive-weak text-text-positive"
+                    : "bg-bg-brand-weak text-text-critical")
+                }
+              >
+                {message.text}
               </div>
             )}
-          </div>
 
-          {/* Amount */}
-          <div className="mb-4">
-            <label className="text-xs font-medium mb-1.5 block" style={{ color: "#62625b" }}>
-              수량 (양수: 지급, 음수: 회수)
-            </label>
-            <input
-              type="number"
-              value={adjustAmount}
-              onChange={(e) => setAdjustAmount(e.target.value)}
-              placeholder="예: 50 또는 -20"
-              className="w-full text-sm px-3 py-2 outline-none"
-              style={{ background: "#f6f6f3", borderRadius: 10, border: "none", color: "#211922" }}
-            />
-          </div>
-
-          {/* Reason */}
-          <div className="mb-4">
-            <label className="text-xs font-medium mb-1.5 block" style={{ color: "#62625b" }}>사유</label>
-            <input
-              type="text"
-              value={adjustReason}
-              onChange={(e) => setAdjustReason(e.target.value)}
-              placeholder="예: 이벤트 보상, 오류 보정 등"
-              className="w-full text-sm px-3 py-2 outline-none"
-              style={{ background: "#f6f6f3", borderRadius: 10, border: "none", color: "#211922" }}
-            />
-          </div>
-
-          {message && (
-            <div
-              className="mb-4 px-3 py-2 text-xs"
-              style={{
-                background: message.type === "success" ? "#103c2514" : "#e6002314",
-                color: message.type === "success" ? "#103c25" : "#e60023",
-                borderRadius: 10,
-              }}
+            <Button
+              type="submit"
+              disabled={!selectedUser || !adjustAmount || !adjustReason}
+              loading={submitting}
+              className="self-start"
             >
-              {message.text}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={!selectedUser || !adjustAmount || !adjustReason || submitting}
-            className="text-sm font-medium px-5 py-2"
-            style={{
-              background: selectedUser && adjustAmount && adjustReason ? "#e60023" : "#e5e5e0",
-              color: selectedUser && adjustAmount && adjustReason ? "#ffffff" : "#91918c",
-              borderRadius: 12,
-              border: "none",
-              cursor: selectedUser && adjustAmount && adjustReason && !submitting ? "pointer" : "not-allowed",
-            }}
-          >
-            {submitting ? "처리 중..." : "크레딧 처리"}
-          </button>
-        </form>
+              {submitting ? "처리 중..." : "크레딧 처리"}
+            </Button>
+          </form>
+        </Card>
       </div>
 
       {/* Charge History */}
       <div>
-        <h2 className="text-sm font-semibold mb-3" style={{ color: "#211922" }}>
-          충전 내역
-        </h2>
+        <h2 className="text-sm font-semibold mb-3 text-text-neutral">충전 내역</h2>
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#e60023" }}>
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            </svg>
+            <Spinner />
           </div>
         ) : (
-          <div style={{ border: "1px solid #e5e5e0", borderRadius: 16, overflow: "hidden" }}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" style={{ minWidth: 500 }}>
-                <thead>
-                  <tr style={{ background: "#f6f6f3" }}>
-                    <th className="text-left px-4 py-3 font-medium" style={{ color: "#62625b" }}>회원</th>
-                    <th className="text-right px-4 py-3 font-medium" style={{ color: "#62625b" }}>수량</th>
-                    <th className="text-left px-4 py-3 font-medium" style={{ color: "#62625b" }}>내용</th>
-                    <th className="text-left px-4 py-3 font-medium" style={{ color: "#62625b" }}>일시</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center py-12" style={{ color: "#62625b" }}>
-                        충전 내역이 없습니다.
-                      </td>
-                    </tr>
-                  ) : (
-                    transactions.map((tx) => (
-                      <tr key={tx.id} style={{ borderTop: "1px solid #e5e5e0" }}>
-                        <td className="px-4 py-3">
-                          <span style={{ color: "#211922", fontWeight: 500 }}>{tx.user_name}</span>
-                        </td>
-                        <td className="px-4 py-3 text-right" style={{ color: "#103c25", fontWeight: 500 }}>
-                          +{tx.amount}
-                        </td>
-                        <td className="px-4 py-3" style={{ color: "#62625b" }}>{tx.description}</td>
-                        <td className="px-4 py-3" style={{ color: "#91918c" }}>
-                          {new Date(tx.created_at).toLocaleDateString("ko-KR")}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
+          <>
+            <DataTable
+              rows={transactions}
+              rowKey={(r) => String(r.id)}
+              columns={txColumns}
+              emptyMessage="충전 내역이 없습니다."
+            />
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 py-3" style={{ borderTop: "1px solid #e5e5e0" }}>
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page <= 1}
-                  className="text-xs px-3 py-1"
-                  style={{
-                    background: "#e5e5e0", borderRadius: 8, border: "none",
-                    cursor: page <= 1 ? "not-allowed" : "pointer",
-                    opacity: page <= 1 ? 0.5 : 1, color: "#211922",
-                  }}
-                >
-                  이전
-                </button>
-                <span className="text-xs" style={{ color: "#62625b" }}>{page} / {totalPages}</span>
-                <button
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page >= totalPages}
-                  className="text-xs px-3 py-1"
-                  style={{
-                    background: "#e5e5e0", borderRadius: 8, border: "none",
-                    cursor: page >= totalPages ? "not-allowed" : "pointer",
-                    opacity: page >= totalPages ? 0.5 : 1, color: "#211922",
-                  }}
-                >
-                  다음
-                </button>
-              </div>
+              <Pagination page={page} totalPages={totalPages} onChange={setPage} />
             )}
-          </div>
+          </>
         )}
       </div>
     </div>
