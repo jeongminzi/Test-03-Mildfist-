@@ -41,7 +41,7 @@ export function TabBar<T extends string = string>({
               "px-4 py-1.5 text-sm font-medium rounded-pill transition-colors cursor-pointer",
               "outline-none focus-visible:ring-2 focus-visible:ring-border-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-default",
               active
-                ? "bg-bg-neutral-solid text-text-inverted"
+                ? "bg-bg-neutral-muted text-text-neutral"
                 : "bg-transparent text-text-neutral-muted hover:text-text-neutral hover:bg-bg-neutral-weak",
             )}
           >
