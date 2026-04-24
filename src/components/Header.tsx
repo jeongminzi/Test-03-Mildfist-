@@ -6,6 +6,8 @@ import { useAuth } from "./AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { DropdownMenu, DropdownMenuItem } from "@/components/molecules/DropdownMenu";
+import { SearchBar } from "@/components/molecules/SearchBar";
+import { useToast } from "@/components/molecules/Toast";
 import { cn } from "@/lib/cn";
 
 const ChevronDown = () => (
@@ -61,6 +63,7 @@ const PRIMARY_NAV: { href: string; label: string }[] = [
 export default function Header() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const toast = useToast();
 
   const items: DropdownMenuItem[] = user
     ? [
@@ -116,8 +119,25 @@ export default function Header() {
         </nav>
       )}
 
+      {/* Search — sm and up only. Submitting falls back to a toast until the
+          search backend exists, so the bar is interactive (not the previous
+          readonly stub) but doesn't pretend to query anything. */}
+      <form
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const data = new FormData(e.currentTarget);
+          const q = String(data.get("q") || "").trim();
+          if (!q) return;
+          toast.show(`"${q}" 검색은 곧 지원됩니다`, { tone: "informative" });
+        }}
+        className="flex-1 max-w-md hidden sm:block"
+      >
+        <SearchBar name="q" placeholder="스타일 검색..." />
+      </form>
+
       {/* Right: Auth */}
-      <div className="flex items-center gap-3 shrink-0 ml-auto">
+      <div className="flex items-center gap-3 shrink-0">
         {user ? (
           <DropdownMenu
             align="end"
