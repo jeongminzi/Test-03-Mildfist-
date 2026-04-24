@@ -176,25 +176,81 @@ function seedIfNeeded() {
     },
   ];
 
-  const colors = ["#e8d5c4", "#c4d4e8", "#d4e8c4", "#e8c4d4", "#c4e8d8", "#d8c4e8"];
-  const labels = ["Minimal Blazer", "Street Cargo", "Preppy Knit", "Modern Shirt", "Casual Hood", "Rock Chic"];
+  /* Top up the seed list to ~40 entries so the bento grid has enough
+     cards to demo. We keep the 6 hand-written ones above for variety in
+     the analysis_json content, then synthesize the rest by cycling
+     through label / color / size / aspect pools so each tile reads
+     differently in the masonry. */
+  const labels = [
+    "Minimal Blazer", "Street Cargo", "Preppy Knit", "Modern Shirt",
+    "Casual Hood", "Rock Chic", "Soft Tailoring", "Workwear",
+    "Y2K Glow", "Old Money", "Linen Layer", "Resort Set",
+    "Denim Story", "Monochrome", "Neo Vintage", "Studio Light",
+    "Quiet Luxury", "Heritage Plaid", "Athleisure", "Coastal Crew",
+    "Editorial 01", "Editorial 02", "Editorial 03", "Editorial 04",
+    "Atelier Drape", "Garden Party", "Studio Portrait", "Night Walk",
+    "Morning Jog", "City Sketch", "Cafe Look", "Reading Hour",
+    "Open Studio", "Soft Shadow", "Slow Sunday", "Lookbook A",
+    "Lookbook B", "Lookbook C", "Lookbook D", "Lookbook E",
+  ];
+  const colors = [
+    "#e8d5c4", "#c4d4e8", "#d4e8c4", "#e8c4d4", "#c4e8d8", "#d8c4e8",
+    "#f1e0c5", "#cad9e6", "#e2d2c8", "#d6e2d8", "#ead7d2", "#cee0e7",
+    "#dfd4ea", "#e4dccf", "#d3dde4", "#e9d8c0", "#cdd8d1", "#e0cad6",
+    "#d4dfd0", "#e6d6c4",
+  ];
+  const sizes: Array<{ w: number; h: number }> = [
+    { w: 400, h: 560 }, { w: 400, h: 480 }, { w: 400, h: 600 },
+    { w: 480, h: 360 }, { w: 360, h: 540 }, { w: 420, h: 580 },
+  ];
 
-  sampleStyles.forEach((s, i) => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="560" viewBox="0 0 400 560">
-      <rect width="400" height="560" fill="${colors[i]}"/>
-      <text x="200" y="240" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#211922" opacity="0.6">${labels[i]}</text>
-      <text x="200" y="280" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#62625b" opacity="0.5">Style #${i + 1}</text>
-      <circle cx="200" cy="180" r="40" fill="none" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
-      <line x1="200" y1="220" x2="200" y2="340" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
-      <line x1="200" y1="260" x2="160" y2="300" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
-      <line x1="200" y1="260" x2="240" y2="300" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
-      <line x1="200" y1="340" x2="170" y2="400" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
-      <line x1="200" y1="340" x2="230" y2="400" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
+  /* Pool of analysis fragments to cycle through for the synthetic styles. */
+  const itemPool = [
+    { category: "상의", name: "오버핏 셔츠", color: "화이트", style: "미니멀", description: "넉넉한 핏의 코튼 셔츠" },
+    { category: "상의", name: "캐시미어 카디건", color: "그레이", style: "클래식", description: "부드러운 촉감의 카디건" },
+    { category: "상의", name: "체크 블레이저", color: "베이지", style: "프레피", description: "가벼운 트위드 블레이저" },
+    { category: "하의", name: "와이드 데님", color: "라이트블루", style: "캐주얼", description: "스트레이트 와이드 핏" },
+    { category: "하의", name: "플리츠 스커트", color: "네이비", style: "클래식", description: "허리 라인 살린 미디 스커트" },
+    { category: "신발", name: "로퍼", color: "블랙", style: "클래식", description: "깔끔한 가죽 로퍼" },
+    { category: "신발", name: "런닝화", color: "화이트", style: "스포티", description: "쿠션 좋은 데일리 런닝화" },
+    { category: "가방", name: "토트백", color: "에크루", style: "내추럴", description: "넉넉한 수납의 캔버스 토트백" },
+    { category: "액세서리", name: "실버 링", color: "실버", style: "모던", description: "심플한 메탈 링" },
+    { category: "모자", name: "버킷햇", color: "베이지", style: "캐주얼", description: "햇빛 가리기 좋은 버킷햇" },
+  ];
+
+  function pick<T>(arr: T[], i: number): T {
+    return arr[i % arr.length];
+  }
+
+  const TOTAL_STYLES = 40;
+  for (let i = 0; i < TOTAL_STYLES; i++) {
+    const sample = sampleStyles[i];
+    const userId = sample ? sample.userId : (i % 3) + 1;
+    const analysisJson =
+      sample?.analysis ??
+      JSON.stringify({
+        items: [
+          pick(itemPool, i),
+          pick(itemPool, i + 3),
+          pick(itemPool, i + 7),
+        ],
+      });
+    const likes = sample?.likes ?? ((i * 17) % 60) + 4;
+    const label = pick(labels, i);
+    const color = pick(colors, i);
+    const { w, h } = pick(sizes, i);
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+      <rect width="${w}" height="${h}" fill="${color}"/>
+      <text x="${w / 2}" y="${h * 0.42}" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#211922" opacity="0.6">${label}</text>
+      <text x="${w / 2}" y="${h * 0.5}" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#62625b" opacity="0.5">Style #${i + 1}</text>
+      <circle cx="${w / 2}" cy="${h * 0.32}" r="${Math.min(w, h) * 0.08}" fill="none" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
+      <line x1="${w / 2}" y1="${h * 0.4}" x2="${w / 2}" y2="${h * 0.6}" stroke="#211922" stroke-width="1.5" opacity="0.2"/>
     </svg>`;
     const b64 = Buffer.from(svg).toString("base64");
     const dataUrl = `data:image/svg+xml;base64,${b64}`;
-    insertStyle({ user_id: s.userId, image_url: dataUrl, analysis_json: s.analysis, likes_count: s.likes });
-  });
+    insertStyle({ user_id: userId, image_url: dataUrl, analysis_json: analysisJson, likes_count: likes });
+  }
 }
 
 // ---------------------------------------------------------------------------

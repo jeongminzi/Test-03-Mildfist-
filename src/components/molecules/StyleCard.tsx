@@ -38,6 +38,8 @@ export function StyleCard({ item, variant = "regular", className }: StyleCardPro
     <Link
       href={href}
       className={cn(
+        /* No rounding on individual cards — StyleGrid wraps the bunch in
+           overflow-hidden + rounded-2xl so only the outer 4 corners curve. */
         "group relative block no-underline overflow-hidden bg-bg-neutral-weak",
         variantSpan[variant],
         className,
@@ -54,7 +56,10 @@ export function StyleCard({ item, variant = "regular", className }: StyleCardPro
 
       {/* Hover overlay (desktop) — gradient + meta */}
       <div
-        className="absolute inset-0 hidden sm:flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity"
+        className={cn(
+          "absolute inset-0 hidden sm:flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity",
+          isFeature ? "p-6" : "p-5",
+        )}
         style={{ background: "linear-gradient(transparent 30%, rgba(0,0,0,0.55))" }}
       >
         {itemNames.length > 0 && (
@@ -99,7 +104,7 @@ export function StyleCard({ item, variant = "regular", className }: StyleCardPro
 
       {/* Mobile-only persistent footer (touch has no hover) */}
       <div
-        className="absolute inset-x-0 bottom-0 sm:hidden p-2 pt-8"
+        className="absolute inset-x-0 bottom-0 sm:hidden p-3 pt-10"
         style={{ background: "linear-gradient(transparent 0%, rgba(0,0,0,0.55))" }}
       >
         <div className="flex items-center justify-between text-text-inverted">
