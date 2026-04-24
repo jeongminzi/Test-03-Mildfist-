@@ -7,20 +7,21 @@ import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/atoms/Button";
 import { Chip } from "@/components/atoms/Chip";
+import { Icon } from "@/components/atoms/Icon";
 import { Input } from "@/components/atoms/Input";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { FileUploadArea } from "@/components/molecules/FileUploadArea";
 import { Stepper } from "@/components/molecules/Stepper";
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  상의: "👕",
-  하의: "👖",
-  신발: "👟",
-  모자: "🧢",
-  가방: "👜",
-  액세서리: "💍",
-  헤어스타일: "💇",
+const CATEGORY_ICON: Record<string, string> = {
+  상의: "checkroom",
+  하의: "checkroom",
+  신발: "directions_walk",
+  모자: "checkroom",
+  가방: "backpack",
+  액세서리: "diamond",
+  헤어스타일: "content_cut",
 };
 
 interface FashionItem {
@@ -303,7 +304,8 @@ function FittingPageInner() {
                       selected={selected}
                       onClick={() => toggleItem(item.category, item.name)}
                     >
-                      {CATEGORY_EMOJI[item.category] ?? "👗"} {item.name}
+                      <Icon name={CATEGORY_ICON[item.category] ?? "checkroom"} size={16} />
+                      {item.name}
                     </Chip>
                   );
                 })}

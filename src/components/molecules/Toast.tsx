@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/cn";
+import { Icon } from "@/components/atoms/Icon";
 
 type Tone = "neutral" | "positive" | "critical" | "informative";
 
@@ -90,9 +91,9 @@ function ToastItemView({ item, onClose }: { item: ToastItem; onClose: () => void
         type="button"
         onClick={onClose}
         aria-label="닫기"
-        className="bg-transparent border-none text-current opacity-60 hover:opacity-100 cursor-pointer"
+        className="bg-transparent border-none text-current opacity-60 hover:opacity-100 cursor-pointer inline-flex items-center"
       >
-        ✕
+        <Icon name="close" size={16} aria-label="닫기" />
       </button>
     </div>
   );

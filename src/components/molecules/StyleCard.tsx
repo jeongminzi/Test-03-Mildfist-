@@ -45,7 +45,9 @@ export function StyleCard({ item, variant = "regular", className }: StyleCardPro
         className,
       )}
     >
-      {/* Image fills the entire cell */}
+      {/* Image fills the cell (object-cover). Layout uniformity is enforced
+         at the grid level — all cells are the same size — so cropping is
+         the right call here, not contain. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}

@@ -5,7 +5,7 @@ import { Chip } from "./Chip";
 const meta: Meta<typeof Chip> = {
   title: "Atoms/Chip",
   component: Chip,
-  args: { children: "👗 원피스" },
+  args: { children: "원피스" },
 };
 export default meta;
 
@@ -19,10 +19,10 @@ export const Group: Story = {
     const Items = () => {
       const [picked, setPicked] = useState<string>("dress");
       const items = [
-        { key: "top", label: "👕 상의" },
-        { key: "dress", label: "👗 원피스" },
-        { key: "pants", label: "👖 하의" },
-        { key: "shoes", label: "👟 신발" },
+        { key: "top", label: "상의" },
+        { key: "dress", label: "원피스" },
+        { key: "pants", label: "하의" },
+        { key: "shoes", label: "신발" },
       ];
       return (
         <div className="flex flex-wrap gap-2">

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
 import { RadioGroup } from "@/components/atoms/Radio";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
@@ -30,14 +31,14 @@ interface StyleDetail {
   user_profile: string | null;
 }
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  상의: "👕",
-  하의: "👖",
-  신발: "👟",
-  모자: "🧢",
-  가방: "👜",
-  액세서리: "💍",
-  헤어스타일: "💇",
+const CATEGORY_ICON: Record<string, string> = {
+  상의: "checkroom",
+  하의: "checkroom",
+  신발: "directions_walk",
+  모자: "checkroom",
+  가방: "backpack",
+  액세서리: "diamond",
+  헤어스타일: "content_cut",
 };
 
 const REPORT_REASONS = [
@@ -187,8 +188,9 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
             <div className="flex items-center gap-2 flex-wrap">
               <Button
                 size="sm"
-                variant={liked ? "primary" : "secondary"}
+                variant="secondary"
                 onClick={handleLike}
+                className={liked ? "text-text-brand" : ""}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24"
                   fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
@@ -235,7 +237,11 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
                 </h3>
                 {items.map((item, i) => (
                   <Card key={i} surface="weak" padding="sm" className="flex items-start gap-3">
-                    <span className="text-xl mt-0.5">{CATEGORY_EMOJI[item.category] ?? "👗"}</span>
+                    <Icon
+                      name={CATEGORY_ICON[item.category] ?? "checkroom"}
+                      size={20}
+                      className="mt-0.5 text-text-neutral-muted"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-text-neutral">{item.name}</p>
                       <p className="text-xs mt-0.5 text-text-neutral-muted">

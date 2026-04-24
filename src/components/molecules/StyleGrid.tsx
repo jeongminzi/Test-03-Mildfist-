@@ -7,16 +7,11 @@ export interface StyleGridProps {
   variantAt?: (index: number) => StyleCardVariant;
 }
 
-/* Bento pattern, deterministic from index so SSR stays stable.
-   Tuned to feel closer to the Midjourney explore reference: tall
-   (1×2) accents are frequent, with occasional wide and feature
-   accents. Index 0 anchors the page with a feature. */
-function defaultVariantAt(index: number): StyleCardVariant {
-  if (index === 0) return "feature";
-  if (index % 11 === 0) return "feature";
-  const m = index % 7;
-  if (m === 1 || m === 4) return "tall";
-  if (m === 6) return "wide";
+/* Default keeps every card 1×1 so the grid stays perfectly uniform —
+   no jagged trailing rows, no visual holes between tall and regular
+   cards. Bento accents are still possible by passing a custom
+   variantAt (e.g. for hero pages or campaign feeds). */
+function defaultVariantAt(_index: number): StyleCardVariant {
   return "regular";
 }
 

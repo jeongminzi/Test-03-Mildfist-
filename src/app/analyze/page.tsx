@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { resizeAndConvertToBase64 } from "@/lib/image-utils";
 import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { EmptyState } from "@/components/molecules/EmptyState";
@@ -16,14 +17,14 @@ interface FashionItem {
   description: string;
 }
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  상의: "👕",
-  하의: "👖",
-  신발: "👟",
-  모자: "🧢",
-  가방: "👜",
-  액세서리: "💍",
-  헤어스타일: "💇",
+const CATEGORY_ICON: Record<string, string> = {
+  상의: "checkroom",
+  하의: "checkroom",
+  신발: "directions_walk",
+  모자: "checkroom",
+  가방: "backpack",
+  액세서리: "diamond",
+  헤어스타일: "content_cut",
 };
 
 const fileToBase64 = resizeAndConvertToBase64;
@@ -145,9 +146,11 @@ export default function AnalyzePage() {
               </h3>
               {items.map((item, i) => (
                 <Card key={i} surface="weak" padding="md" className="flex items-start gap-4">
-                  <span className="text-2xl leading-none mt-0.5">
-                    {CATEGORY_EMOJI[item.category] ?? "👗"}
-                  </span>
+                  <Icon
+                    name={CATEGORY_ICON[item.category] ?? "checkroom"}
+                    size={24}
+                    className="mt-0.5 text-text-neutral-muted"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-text-neutral">{item.name}</p>
                     <p className="text-xs mt-0.5 text-text-neutral-muted">

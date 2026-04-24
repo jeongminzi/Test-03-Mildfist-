@@ -2,6 +2,24 @@
 @import "../styles/tokens/primitive.css";
 @import "../styles/tokens/semantic.css";
 
+/* Material Symbols Rounded base — used by the Icon atom.
+   The variable font ships axes for FILL / wght / GRAD / opsz; the
+   Icon component sets them inline per-instance via fontVariationSettings. */
+.material-symbols-rounded {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
 /* Expose semantic tokens to Tailwind utility classes.
    - Foreground roles → text-* / fill-* / stroke-*
    - Background roles → bg-*
