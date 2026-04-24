@@ -30,7 +30,7 @@ export function StyleCard({ item, className }: StyleCardProps) {
   const { href, imageUrl, userName, userProfile, likesCount, itemNames = [] } = item;
 
   return (
-    <div className={cn("mb-3 sm:mb-4 break-inside-avoid", className)}>
+    <div className={cn("mb-4 sm:mb-6 break-inside-avoid", className)}>
       <Link
         href={href}
         className="group block no-underline relative overflow-hidden rounded-card bg-bg-neutral-weak"

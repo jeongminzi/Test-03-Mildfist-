@@ -76,7 +76,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-full bg-bg-default">
       {/* Hero */}
-      <div className="px-4 sm:px-6 pt-8 pb-6">
+      <div className="px-5 sm:px-8 pt-12 pb-8">
         <SectionTitle
           variant="headingWithSub"
           align="center"
@@ -86,7 +86,7 @@ export default function HomePage() {
       </div>
 
       {/* Sort tabs */}
-      <div className="px-4 sm:px-6">
+      <div className="px-5 sm:px-8">
         <TabBar
           items={[
             { key: "latest", label: "최신순" },
@@ -98,7 +98,7 @@ export default function HomePage() {
       </div>
 
       {/* Masonry grid */}
-      <div className="flex-1 px-4 sm:px-6 py-6">
+      <div className="flex-1 px-5 sm:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Spinner size="lg" />

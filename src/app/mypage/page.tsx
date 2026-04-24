@@ -140,12 +140,12 @@ export default function MyPage() {
 
   return (
     <div className="flex-1 bg-bg-default">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
         {/* Profile section */}
         <div className="flex items-center gap-4 mb-8">
           <Avatar name={user.name} size="xl" />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-text-neutral">
+            <h1 className="text-xl font-semibold tracking-tight text-text-neutral">
               {user.name}
             </h1>
             <p className="text-sm text-text-neutral-muted">{user.email}</p>
@@ -261,7 +261,7 @@ export default function MyPage() {
             )}
 
             {activeTab === "credits" && (
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-8">
                 <Card surface="weak" padding="lg" className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-text-neutral-muted">보유 크레딧</p>

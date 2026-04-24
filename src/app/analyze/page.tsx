@@ -90,10 +90,10 @@ export default function AnalyzePage() {
 
   return (
     <div className="flex-1 bg-bg-default">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex flex-col gap-6">
+      <div className="max-w-2xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
+        <div className="flex flex-col gap-8">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-text-neutral">
+            <h1 className="text-xl font-semibold tracking-tight text-text-neutral">
               패션 아이템 인식
             </h1>
             <p className="mt-1 text-sm text-text-neutral-muted">

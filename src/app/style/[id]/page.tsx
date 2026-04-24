@@ -148,7 +148,7 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="flex-1 bg-bg-default">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm mb-6 no-underline text-text-neutral-muted hover:text-text-neutral"
@@ -172,7 +172,7 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {/* Info */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <div className="flex items-center gap-3">
               <Avatar name={style.user_name} src={style.user_profile} size="md" />
               <div>

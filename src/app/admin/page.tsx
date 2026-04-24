@@ -71,8 +71,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-2xl font-semibold tracking-tight mb-6 text-text-neutral">대시보드</h1>
+    <div className="p-8 sm:p-10 max-w-5xl">
+      <h1 className="text-xl font-semibold tracking-tight mb-6 text-text-neutral">대시보드</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard

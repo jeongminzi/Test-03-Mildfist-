@@ -31,7 +31,7 @@ export function SectionTitle({
           {caption}
         </span>
       )}
-      <h2 className="text-2xl sm:text-3xl font-semibold text-text-neutral tracking-tight">
+      <h2 className="text-xl sm:text-2xl font-semibold text-text-neutral tracking-tight">
         {heading}
       </h2>
       {showSubtext && <p className="text-sm text-text-neutral-muted">{subtext}</p>}

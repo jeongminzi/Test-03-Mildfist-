@@ -24,7 +24,7 @@ export function StyleGrid({ items, className }: StyleGridProps) {
     <div
       className={cn(
         "columns-2 sm:columns-3 xl:columns-4 2xl:columns-5",
-        "gap-3 sm:gap-4 [column-fill:balance]",
+        "gap-4 sm:gap-6 [column-fill:balance]",
         className,
       )}
     >

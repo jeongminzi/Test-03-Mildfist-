@@ -20,8 +20,8 @@ export const Roles: Story = {
       <p className="text-sm text-text-neutral-muted mb-4">
         Pretendard 기반의 타이포그래피 역할. 본문 코드에서는 Tailwind 유틸리티 (text-xl, font-semibold 등)를 직접 사용합니다.
       </p>
-      <Sample role="heading.xl" className="text-3xl font-semibold text-text-neutral tracking-tight" sample="AI 패션 스타일 피드" />
-      <Sample role="heading.lg" className="text-2xl font-semibold text-text-neutral tracking-tight" sample="가상 피팅을 시작해 보세요" />
+      <Sample role="heading.xl" className="text-2xl font-semibold text-text-neutral tracking-tight" sample="AI 패션 스타일 피드" />
+      <Sample role="heading.lg" className="text-xl font-semibold text-text-neutral tracking-tight" sample="가상 피팅을 시작해 보세요" />
       <Sample role="heading.md" className="text-lg font-semibold text-text-neutral" sample="회원 정보" />
       <Sample role="heading.sm" className="text-base font-semibold text-text-neutral" sample="결제 내역" />
       <Sample role="body.lg" className="text-base text-text-neutral" sample="다양한 스타일을 탐색하고, AI 가상 피팅을 체험하세요." />

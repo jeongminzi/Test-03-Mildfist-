@@ -115,8 +115,8 @@ export default function AdminMembers() {
   };
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-2xl font-semibold tracking-tight mb-6 text-text-neutral">회원 관리</h1>
+    <div className="p-8 sm:p-10 max-w-5xl">
+      <h1 className="text-xl font-semibold tracking-tight mb-6 text-text-neutral">회원 관리</h1>
 
       <form onSubmit={handleSearch} className="flex gap-2 mb-6">
         <SearchBar
