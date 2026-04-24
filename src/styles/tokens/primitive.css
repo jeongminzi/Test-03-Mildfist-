@@ -1,0 +1,99 @@
+/* Primitive tokens — raw scales with no semantic meaning.
+   UI components must NOT reference these directly; reference semantic tokens instead. */
+
+:root {
+  /* Gray (warm) — gray.00 → gray.1000 */
+  --gray-00: #ffffff;
+  --gray-100: #f6f6f3;
+  --gray-200: #e5e5e0;
+  --gray-300: #e0e0d9;
+  --gray-400: #c8c8c2;
+  --gray-500: #aaa9a4;
+  --gray-600: #91918c;
+  --gray-700: #797872;
+  --gray-800: #62625b;
+  --gray-900: #3f3a3d;
+  --gray-1000: #211922;
+
+  /* Carrot — brand red (Pinterest-style) */
+  --carrot-100: #fff0f1;
+  --carrot-200: #ffd6da;
+  --carrot-300: #fab2b8;
+  --carrot-400: #f48088;
+  --carrot-500: #ed4d57;
+  --carrot-600: #e60023;
+  --carrot-700: #c4001d;
+  --carrot-800: #a30018;
+  --carrot-900: #800013;
+  --carrot-1000: #5c000d;
+
+  /* Green — positive */
+  --green-100: #e8f3ec;
+  --green-200: #c8e2d2;
+  --green-300: #9acbb0;
+  --green-400: #6cb38d;
+  --green-500: #3f9a6a;
+  --green-600: #2c7e54;
+  --green-700: #1f6442;
+  --green-800: #144a31;
+  --green-900: #103c25;
+  --green-1000: #0a2917;
+
+  /* Blue — informative */
+  --blue-100: #ecefff;
+  --blue-200: #c5cefa;
+  --blue-300: #9aabf3;
+  --blue-400: #6f87ec;
+  --blue-500: #4663e0;
+  --blue-600: #2b48d4;
+  --blue-700: #1f37b0;
+  --blue-800: #15278a;
+  --blue-900: #0d1a64;
+  --blue-1000: #08113f;
+
+  /* Purple — magic / premium */
+  --purple-100: #f1ebff;
+  --purple-200: #d6c5fa;
+  --purple-300: #b89df1;
+  --purple-400: #9776e0;
+  --purple-500: #7d5cc6;
+  --purple-600: #6845ab;
+  --purple-700: #543290;
+  --purple-800: #402275;
+  --purple-900: #2d1659;
+  --purple-1000: #1a0a3e;
+
+  /* Spacing — 4-base scale (only steps actually used in the draft + neighbors) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius — collapsed from observed values (2/6/8/10/12/16/20) */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadow — only one observed; keep room for elevation tokens */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Typography — Pretendard primary, system fallback */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
+    "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono",
+    Menlo, monospace;
+}

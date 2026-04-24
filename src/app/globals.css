@@ -1,37 +1,78 @@
 @import "tailwindcss";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+@import "../styles/tokens/primitive.css";
+@import "../styles/tokens/semantic.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #211922;
-  --pinterest-red: #e60023;
-  --sand-gray: #e5e5e0;
-  --olive-gray: #62625b;
-  --warm-silver: #91918c;
-  --plum-black: #211922;
-  --warm-light: #e0e0d9;
-  --fog: #f6f6f3;
-}
-
+/* Expose semantic tokens to Tailwind utility classes.
+   - Foreground roles → text-* / fill-* / stroke-*
+   - Background roles → bg-*
+   - Stroke roles → border-*
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-pinterest-red: var(--pinterest-red);
-  --color-sand-gray: var(--sand-gray);
-  --color-olive-gray: var(--olive-gray);
-  --color-warm-silver: var(--warm-silver);
-  --color-plum-black: var(--plum-black);
-  --color-warm-light: var(--warm-light);
-  --color-fog: var(--fog);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Text colors (fg.*) */
+  --color-text-neutral: var(--fg-neutral-solid);
+  --color-text-neutral-muted: var(--fg-neutral-muted);
+  --color-text-neutral-subtle: var(--fg-neutral-subtle);
+  --color-text-inverted: var(--fg-neutral-inverted);
+  --color-text-brand: var(--fg-brand-solid);
+  --color-text-positive: var(--fg-positive-solid);
+  --color-text-critical: var(--fg-critical-solid);
+  --color-text-informative: var(--fg-informative-solid);
+  --color-text-magic: var(--fg-magic-solid);
+
+  /* Background colors (bg.*) */
+  --color-bg-default: var(--bg-layer-default);
+  --color-bg-floating: var(--bg-layer-floating);
+  --color-bg-neutral-weak: var(--bg-neutral-weak);
+  --color-bg-neutral-muted: var(--bg-neutral-muted);
+  --color-bg-neutral-solid: var(--bg-neutral-solid);
+  --color-bg-brand-solid: var(--bg-brand-solid);
+  --color-bg-brand-solid-pressed: var(--bg-brand-solid-pressed);
+  --color-bg-brand-weak: var(--bg-brand-weak);
+  --color-bg-positive-weak: var(--bg-positive-weak);
+  --color-bg-critical-weak: var(--bg-critical-weak);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-bg-overlay-strong: var(--bg-overlay-strong);
+
+  /* Border colors (stroke.*) */
+  --color-border-muted: var(--stroke-neutral-muted);
+  --color-border-subtle: var(--stroke-neutral-subtle);
+  --color-border-solid: var(--stroke-neutral-solid);
+  --color-border-brand: var(--stroke-brand-solid);
+
+  /* Radius */
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-modal: var(--radius-modal);
+  --radius-pill: var(--radius-pill);
+  --radius-tag: var(--radius-tag);
+
+  /* Shadow */
+  --shadow-card: var(--shadow-card);
+  --shadow-popover: var(--shadow-popover);
+  --shadow-modal: var(--shadow-modal);
+
+  /* Font family */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* ── Legacy aliases — keep so existing draft screens still render.
+        Remove once screens are migrated to semantic classes. */
+  --color-background: var(--gray-00);
+  --color-foreground: var(--gray-1000);
+  --color-pinterest-red: var(--carrot-600);
+  --color-sand-gray: var(--gray-200);
+  --color-olive-gray: var(--gray-800);
+  --color-warm-silver: var(--gray-600);
+  --color-plum-black: var(--gray-1000);
+  --color-warm-light: var(--gray-300);
+  --color-fog: var(--gray-100);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, system-ui, "Segoe UI", Roboto, Oxygen-Sans,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", Ubuntu, Cantarell,
-    "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--bg-layer-default);
+  color: var(--fg-neutral-solid);
+  font-family: var(--font-sans);
 }
 
 @keyframes spin {

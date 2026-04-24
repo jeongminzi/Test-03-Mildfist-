@@ -1,0 +1,64 @@
+/* Semantic tokens — UI references these only.
+   Naming: {property}.{role}-{variant}[-{state}]
+   Property: fg | bg | stroke
+   Role: layer | neutral | brand | informative | critical | positive | magic
+   Variant: solid | weak | muted | subtle | inverted
+   State: pressed | focused (optional)
+*/
+
+:root {
+  /* Foreground (text/icon) */
+  --fg-neutral-solid: var(--gray-1000);     /* default body text */
+  --fg-neutral-muted: var(--gray-800);      /* secondary text, captions */
+  --fg-neutral-subtle: var(--gray-600);     /* placeholder, icons, hint */
+  --fg-neutral-inverted: var(--gray-00);    /* white text on dark/brand */
+  --fg-brand-solid: var(--carrot-600);      /* brand-colored label or icon */
+  --fg-positive-solid: var(--green-900);    /* success label */
+  --fg-critical-solid: var(--carrot-600);   /* error label, destructive action */
+  --fg-informative-solid: var(--blue-600);  /* informational link/label */
+  --fg-magic-solid: var(--purple-600);      /* premium/AI label */
+
+  /* Background (surfaces, fills) */
+  --bg-layer-default: var(--gray-00);       /* main app background */
+  --bg-layer-floating: var(--gray-00);      /* card / popover surface (paired with shadow) */
+  --bg-neutral-weak: var(--gray-100);       /* subtle section bg */
+  --bg-neutral-muted: var(--gray-200);      /* slightly stronger fill (chips) */
+  --bg-neutral-solid: var(--gray-1000);     /* inverse / dark surface */
+  --bg-brand-solid: var(--carrot-600);      /* primary CTA */
+  --bg-brand-solid-pressed: var(--carrot-700);
+  --bg-brand-weak: rgba(230, 0, 35, 0.08);  /* brand tint background (success/info badge bg in admin) */
+  --bg-positive-weak: rgba(16, 60, 37, 0.08);
+  --bg-critical-weak: var(--carrot-100);    /* red tint for error */
+  --bg-overlay: rgba(0, 0, 0, 0.4);         /* modal backdrop */
+  --bg-overlay-strong: rgba(0, 0, 0, 0.5);  /* hover image overlay */
+
+  /* Stroke (borders, dividers) */
+  --stroke-neutral-muted: var(--gray-200);  /* default border / divider */
+  --stroke-neutral-subtle: var(--gray-300); /* very faint divider */
+  --stroke-neutral-solid: var(--gray-600);  /* input border */
+  --stroke-brand-solid: var(--carrot-600);  /* brand-colored border */
+
+  /* Semantic spacing */
+  --space-component-xs: var(--space-1);
+  --space-component-sm: var(--space-2);
+  --space-component-md: var(--space-3);
+  --space-component-lg: var(--space-4);
+  --space-layout-sm: var(--space-4);
+  --space-layout-md: var(--space-6);
+  --space-layout-lg: var(--space-8);
+  --space-layout-xl: var(--space-12);
+
+  /* Semantic radius */
+  --radius-control: var(--radius-xl);       /* button, input — 16px */
+  --radius-card: var(--radius-xl);          /* card surface — 16px */
+  --radius-modal: var(--radius-xl);         /* modal — 16px */
+  --radius-pill: var(--radius-2xl);         /* pill button — 20px */
+  --radius-avatar: var(--radius-full);      /* circular avatar */
+  --radius-tag: var(--radius-md);           /* small tag — 8px */
+
+  /* Semantic shadow */
+  --shadow-card: var(--shadow-md);
+  --shadow-popover: var(--shadow-md);
+  --shadow-modal: var(--shadow-lg);
+  --shadow-floating-action: var(--shadow-md);
+}
