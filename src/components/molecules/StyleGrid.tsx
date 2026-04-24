@@ -6,24 +6,23 @@ export interface StyleGridProps {
   className?: string;
 }
 
-/* Uniform 1×1 grid. Every cell is the same size, so no jagged trailing
-   rows; the LAST card stretches its grid-column-end to -1 so the last
-   row is always visually filled, regardless of how many items remain
-   (1, 2, 3, …) or what the active column count is at the current
-   breakpoint. Image inside each card uses object-cover. */
+/* Pinterest-style CSS columns masonry — cards keep their natural aspect
+   ratio so column packing produces the staggered, varied-height look
+   the reference shows. Column count steps responsively:
+     <640        2 cols
+     ≥640 sm    3 cols
+     ≥1024 lg   4 cols
+     ≥1280 xl   5 cols
+     ≥1536 2xl  6 cols
+   gap-1 / 1.5 keeps cards densely packed. Outer 4 corners are rounded
+   via overflow-hidden + rounded-2xl on the wrapper. */
 export function StyleGrid({ items, className }: StyleGridProps) {
   return (
     <div className={cn("overflow-hidden rounded-2xl", className)}>
       <div
         className={cn(
-          "grid",
-          /* Larger cards again: pull column count down a step, push
-             auto-rows up to ~220-260px so cards read substantial. */
-          "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
-          "[grid-auto-rows:220px] sm:[grid-auto-rows:260px]",
-          "gap-1 sm:gap-1.5",
-          /* Last child stretches to the end of its row → no holes. */
-          "[&>*:last-child]:[grid-column-end:-1]",
+          "columns-2 sm:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6",
+          "gap-1 sm:gap-1.5 [column-fill:balance]",
         )}
       >
         {items.map((item) => (
