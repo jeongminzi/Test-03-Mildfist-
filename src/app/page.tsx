@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { resizeAndConvertToBase64 } from "@/lib/image-utils";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { SectionTitle } from "@/components/molecules/SectionTitle";
+import { StyleGrid } from "@/components/molecules/StyleGrid";
 import { TabBar } from "@/components/molecules/TabBar";
 
 interface StyleItem {
@@ -131,90 +130,26 @@ export default function HomePage() {
             }
           />
         ) : (
-          <div className="columns-2 sm:columns-3 lg:columns-4 gap-4" style={{ columnFill: "balance" }}>
-            {styles.map((style) => {
-              let items: { name: string }[] = [];
+          <StyleGrid
+            items={styles.map((s) => {
+              let itemNames: string[] = [];
               try {
-                const parsed = JSON.parse(style.analysis_json);
-                items = parsed.items || [];
+                const parsed = JSON.parse(s.analysis_json);
+                itemNames = (parsed.items || []).map((it: { name: string }) => it.name);
               } catch {
-                // ignore
+                // ignore malformed analysis json
               }
-
-              return (
-                <Link
-                  key={style.id}
-                  href={`/style/${style.id}`}
-                  className="block mb-4 break-inside-avoid no-underline group transition-transform hover:-translate-y-0.5"
-                >
-                  <div className="overflow-hidden relative rounded-card bg-bg-neutral-weak transition-shadow group-hover:shadow-card">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={style.image_url}
-                      alt={`${style.user_name}님의 스타일`}
-                      className="w-full object-cover min-h-[180px]"
-                    />
-                    <div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3"
-                      style={{
-                        background:
-                          "linear-gradient(transparent 40%, var(--bg-overlay-strong))",
-                      }}
-                    >
-                      {items.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {items.slice(0, 3).map((item, i) => (
-                            <span
-                              key={i}
-                              className="text-xs px-2 py-0.5 rounded-tag text-text-neutral"
-                              style={{ background: "rgba(255,255,255,0.85)" }}
-                            >
-                              {item.name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-2 px-1 space-y-1">
-                    {items.length > 0 && (
-                      <div className="flex flex-wrap gap-1 sm:hidden">
-                        {items.slice(0, 2).map((item, i) => (
-                          <span
-                            key={i}
-                            className="text-[10px] px-1.5 py-0.5 rounded-tag bg-bg-neutral-weak text-text-neutral-muted"
-                          >
-                            {item.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Avatar name={style.user_name} src={style.user_profile} size="xs" />
-                        <span className="text-xs text-text-neutral">{style.user_name}</span>
-                      </div>
-                      <span className="inline-flex items-center gap-1 text-xs text-text-neutral-subtle">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill={style.likes_count > 0 ? "currentColor" : "none"}
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          className={style.likes_count > 0 ? "text-text-brand" : ""}
-                        >
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                        {style.likes_count}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
+              return {
+                id: s.id,
+                href: `/style/${s.id}`,
+                imageUrl: s.image_url,
+                userName: s.user_name,
+                userProfile: s.user_profile,
+                likesCount: s.likes_count,
+                itemNames,
+              };
             })}
-          </div>
+          />
         )}
       </div>
 
