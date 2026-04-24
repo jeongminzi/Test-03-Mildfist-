@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useAuth } from "./AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
-import { SearchBar } from "@/components/molecules/SearchBar";
 import { DropdownMenu, DropdownMenuItem } from "@/components/molecules/DropdownMenu";
 
 const ChevronDown = () => (
@@ -84,13 +83,8 @@ export default function Header() {
         </span>
       </Link>
 
-      {/* Center: Search */}
-      <div className="flex-1 max-w-md mx-4 hidden sm:block">
-        <SearchBar placeholder="스타일 검색..." readOnly />
-      </div>
-
       {/* Right: Auth */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-3 shrink-0 ml-auto">
         {user ? (
           <DropdownMenu
             align="end"

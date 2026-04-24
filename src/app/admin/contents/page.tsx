@@ -7,6 +7,8 @@ import { Card } from "@/components/molecules/Card";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { LikeButton } from "@/components/molecules/LikeButton";
 import { TabBar } from "@/components/molecules/TabBar";
+import { useToast } from "@/components/molecules/Toast";
+import { ModalShell } from "@/components/organisms/ModalShell";
 import { Pagination } from "@/components/organisms/Pagination";
 
 type Tab = "all" | "reports";
@@ -41,6 +43,9 @@ export default function AdminContents() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<ContentItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const toast = useToast();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -73,15 +78,28 @@ export default function AdminContents() {
       if (res.ok) {
         if (action === "delete") {
           setContents((prev) => prev.filter((c) => c.id !== styleId));
+          toast.show("콘텐츠가 삭제되었습니다", { tone: "positive" });
         } else if (action === "hide") {
           setContents((prev) => prev.map((c) => (c.id === styleId ? { ...c, is_hidden: 1 } : c)));
+          toast.show("콘텐츠를 숨김 처리했습니다", { tone: "positive" });
         } else {
           setContents((prev) => prev.map((c) => (c.id === styleId ? { ...c, is_hidden: 0 } : c)));
+          toast.show("콘텐츠 숨김을 해제했습니다", { tone: "positive" });
         }
+      } else {
+        toast.show("작업에 실패했습니다", { tone: "critical" });
       }
     } catch {
-      // ignore
+      toast.show("작업 중 오류가 발생했습니다", { tone: "critical" });
     }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    await handleContentAction(deleteTarget.id, "delete");
+    setDeleting(false);
+    setDeleteTarget(null);
   };
 
   const handleReportAction = async (reportId: number, action: "hide_content" | "dismiss") => {
@@ -168,11 +186,7 @@ export default function AdminContents() {
                           <Button
                             size="sm"
                             variant="danger"
-                            onClick={() => {
-                              if (confirm("정말 삭제하시겠습니까?")) {
-                                handleContentAction(c.id, "delete");
-                              }
-                            }}
+                            onClick={() => setDeleteTarget(c)}
                           >
                             삭제
                           </Button>
@@ -235,6 +249,32 @@ export default function AdminContents() {
           {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={setPage} />}
         </>
       )}
+
+      <ModalShell
+        open={!!deleteTarget}
+        onClose={() => {
+          if (!deleting) setDeleteTarget(null);
+        }}
+        title="콘텐츠 삭제"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              취소
+            </Button>
+            <Button variant="danger" onClick={confirmDelete} loading={deleting}>
+              삭제
+            </Button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p className="text-sm text-text-neutral-muted">
+            <strong className="text-text-neutral">{deleteTarget.user_name}</strong>님의 스타일을
+            영구 삭제합니다. 좋아요 {deleteTarget.likes_count}개와 함께 작업은
+            <strong className="text-text-critical"> 되돌릴 수 없습니다</strong>.
+          </p>
+        )}
+      </ModalShell>
     </div>
   );
 }

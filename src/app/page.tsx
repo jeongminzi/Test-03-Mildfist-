@@ -9,7 +9,6 @@ import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { EmptyState } from "@/components/molecules/EmptyState";
-import { LikeButton } from "@/components/molecules/LikeButton";
 import { SectionTitle } from "@/components/molecules/SectionTitle";
 import { TabBar } from "@/components/molecules/TabBar";
 
@@ -164,12 +163,39 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between mt-2 px-1">
-                    <div className="flex items-center gap-2">
-                      <Avatar name={style.user_name} src={style.user_profile} size="xs" />
-                      <span className="text-xs text-text-neutral">{style.user_name}</span>
+                  <div className="mt-2 px-1 space-y-1">
+                    {items.length > 0 && (
+                      <div className="flex flex-wrap gap-1 sm:hidden">
+                        {items.slice(0, 2).map((item, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] px-1.5 py-0.5 rounded-tag bg-bg-neutral-weak text-text-neutral-muted"
+                          >
+                            {item.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Avatar name={style.user_name} src={style.user_profile} size="xs" />
+                        <span className="text-xs text-text-neutral">{style.user_name}</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 text-xs text-text-neutral-subtle">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill={style.likes_count > 0 ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className={style.likes_count > 0 ? "text-text-brand" : ""}
+                        >
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                        {style.likes_count}
+                      </span>
                     </div>
-                    <LikeButton liked={style.likes_count > 0} count={style.likes_count} />
                   </div>
                 </Link>
               );

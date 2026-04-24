@@ -7,10 +7,12 @@ import { useAuth } from "@/components/AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
+import { Input } from "@/components/atoms/Input";
 import { Card } from "@/components/molecules/Card";
 import { TabBar } from "@/components/molecules/TabBar";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { LikeButton } from "@/components/molecules/LikeButton";
+import { ModalShell } from "@/components/organisms/ModalShell";
 
 interface StyleItem {
   id: number;
@@ -54,7 +56,9 @@ export default function MyPage() {
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [charging, setCharging] = useState(false);
-  const [withdrawConfirm, setWithdrawConfirm] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawText, setWithdrawText] = useState("");
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -110,6 +114,7 @@ export default function MyPage() {
   };
 
   const handleWithdraw = async () => {
+    setWithdrawing(true);
     try {
       const res = await fetch("/api/auth/withdraw", { method: "POST" });
       if (res.ok) {
@@ -118,8 +123,12 @@ export default function MyPage() {
       }
     } catch {
       // ignore
+    } finally {
+      setWithdrawing(false);
     }
   };
+
+  const withdrawConfirmed = withdrawText.trim() === "탈퇴";
 
   if (!user) return null;
 
@@ -323,25 +332,65 @@ export default function MyPage() {
 
         {/* Withdraw */}
         <div className="mt-12 pt-6 border-t border-border-muted">
-          {!withdrawConfirm ? (
-            <button
-              type="button"
-              onClick={() => setWithdrawConfirm(true)}
-              className="text-xs text-text-neutral-subtle bg-transparent border-none cursor-pointer"
-            >
-              회원 탈퇴
-            </button>
-          ) : (
-            <div className="flex items-center gap-3 flex-wrap">
-              <p className="text-xs text-text-critical">
-                정말 탈퇴하시겠습니까? 모든 데이터가 삭제됩니다.
-              </p>
-              <Button size="sm" onClick={handleWithdraw}>탈퇴하기</Button>
-              <Button size="sm" variant="secondary" onClick={() => setWithdrawConfirm(false)}>취소</Button>
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              setWithdrawText("");
+              setWithdrawOpen(true);
+            }}
+            className="text-xs text-text-neutral-subtle bg-transparent border-none cursor-pointer"
+          >
+            회원 탈퇴
+          </button>
         </div>
       </div>
+
+      <ModalShell
+        open={withdrawOpen}
+        onClose={() => {
+          if (!withdrawing) setWithdrawOpen(false);
+        }}
+        title="정말 탈퇴하시겠어요?"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setWithdrawOpen(false)}
+              disabled={withdrawing}
+            >
+              취소
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleWithdraw}
+              disabled={!withdrawConfirmed}
+              loading={withdrawing}
+            >
+              {withdrawing ? "처리 중..." : "탈퇴하기"}
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-text-neutral-muted leading-relaxed">
+            탈퇴 시 회원 정보, 업로드한 스타일, 피팅 히스토리, 남은 크레딧이
+            <strong className="text-text-critical"> 모두 영구 삭제</strong>됩니다.
+            이 작업은 되돌릴 수 없습니다.
+          </p>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-text-neutral">
+              계속 진행하려면 <strong className="text-text-critical">탈퇴</strong>를 입력해 주세요.
+            </label>
+            <Input
+              value={withdrawText}
+              onChange={(e) => setWithdrawText(e.target.value)}
+              placeholder="탈퇴"
+              autoFocus
+              disabled={withdrawing}
+            />
+          </div>
+        </div>
+      </ModalShell>
     </div>
   );
 }

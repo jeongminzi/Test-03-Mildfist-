@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, Suspense } from "react";
 import { resizeAndConvertToBase64 } from "@/lib/image-utils";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/atoms/Button";
@@ -45,10 +46,12 @@ export default function FittingPage() {
   );
 }
 
+const FITTING_COST = 1;
+
 function FittingPageInner() {
   const searchParams = useSearchParams();
   const styleId = searchParams.get("style");
-  const { refresh } = useAuth();
+  const { user, refresh } = useAuth();
 
   const [myImage, setMyImage] = useState<string | null>(null);
   const [myPreview, setMyPreview] = useState<string | null>(null);
@@ -178,7 +181,9 @@ function FittingPageInner() {
     }
   }, [myImage, styleImage, selectedItems, refresh]);
 
-  const disabled = !myImage || !styleImage || selectedItems.length === 0 || fitLoading;
+  const credits = user?.credits ?? 0;
+  const insufficientCredits = credits < FITTING_COST;
+  const disabled = !myImage || !styleImage || selectedItems.length === 0 || fitLoading || insufficientCredits;
 
   return (
     <div className="flex-1 bg-bg-default">
@@ -190,6 +195,36 @@ function FittingPageInner() {
               내 사진과 스타일 사진을 업로드한 후, 입혀볼 아이템을 선택하세요.
             </p>
           </div>
+
+          {/* Credit balance — sets expectations before the user invests time */}
+          <Card
+            surface={insufficientCredits ? "default" : "weak"}
+            padding="md"
+            bordered={insufficientCredits}
+            className="flex items-center justify-between"
+          >
+            <div className="flex items-center gap-2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.5" className="text-text-brand">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              <div>
+                <p className="text-xs text-text-neutral-muted">보유 크레딧</p>
+                <p className="text-sm font-semibold text-text-neutral">
+                  {credits.toLocaleString()} 크레딧
+                  <span className="ml-2 text-xs font-normal text-text-neutral-muted">
+                    이번 피팅에 {FITTING_COST} 사용
+                  </span>
+                </p>
+              </div>
+            </div>
+            {insufficientCredits && (
+              <Link href="/mypage" className="no-underline">
+                <Button size="sm">크레딧 충전</Button>
+              </Link>
+            )}
+          </Card>
 
           {/* Two upload areas */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -263,15 +298,38 @@ function FittingPageInner() {
                 placeholder="예: 검정 가죽 자켓, 흰색 티셔츠 (쉼표로 구분)"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    const val = (e.target as HTMLInputElement).value.trim();
-                    if (val) setSelectedItems(val.split(",").map((s) => s.trim()).filter(Boolean));
+                    e.preventDefault();
+                    const target = e.target as HTMLInputElement;
+                    const val = target.value.trim();
+                    if (val) {
+                      setSelectedItems(val.split(",").map((s) => s.trim()).filter(Boolean));
+                      target.value = "";
+                    }
                   }
                 }}
                 onBlur={(e) => {
                   const val = e.target.value.trim();
-                  if (val) setSelectedItems(val.split(",").map((s) => s.trim()).filter(Boolean));
+                  if (val) {
+                    setSelectedItems(val.split(",").map((s) => s.trim()).filter(Boolean));
+                    e.target.value = "";
+                  }
                 }}
               />
+              {selectedItems.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {selectedItems.map((item, i) => (
+                    <Chip
+                      key={i}
+                      selected
+                      onClick={() =>
+                        setSelectedItems((prev) => prev.filter((_, idx) => idx !== i))
+                      }
+                    >
+                      {item} ✕
+                    </Chip>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthContext";
 import Header from "@/components/Header";
+import { ToastProvider } from "@/components/molecules/Toast";
 
 export const metadata: Metadata = {
   title: "MildFist - AI Virtual Fitting",
@@ -23,13 +24,15 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-bg-default text-text-neutral font-sans">
         <AuthProvider>
-          <Header />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <footer className="flex items-center justify-center px-6 py-4 border-t border-border-muted">
-            <p className="text-xs text-text-neutral-subtle">
-              MildFist &middot; Powered by Gemini AI
-            </p>
-          </footer>
+          <ToastProvider>
+            <Header />
+            <main className="flex-1 flex flex-col">{children}</main>
+            <footer className="flex items-center justify-center px-6 py-4 border-t border-border-muted">
+              <p className="text-xs text-text-neutral-subtle">
+                MildFist &middot; Powered by Gemini AI
+              </p>
+            </footer>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -73,6 +73,7 @@ export default function StyleDetailPage({ params }: { params: Promise<{ id: stri
         const data = await res.json();
         setStyle(data.style);
         setLikesCount(data.style.likes_count);
+        setLiked(!!data.liked);
         try {
           const parsed = JSON.parse(data.style.analysis_json);
           setItems(parsed.items || []);
