@@ -8,20 +8,18 @@ export interface StyleGridProps {
 
 /* Pinterest-style CSS columns masonry — cards keep their natural aspect
    ratio so column packing produces the staggered, varied-height look
-   the reference shows. Column count steps responsively:
+   the reference shows. Bigger cards: pull each breakpoint's column
+   count down by one so each tile gets ~50% more width:
      <640        2 cols
-     ≥640 sm    3 cols
-     ≥1024 lg   4 cols
-     ≥1280 xl   5 cols
-     ≥1536 2xl  6 cols
-   Each card carries its own rounded-2xl now (the wrapper-level rounding
-   is gone), so individual cards read as separate tiles with breathing
-   room between them. */
+     ≥640 sm    2 cols  → cards much wider on small tablets
+     ≥1024 lg   3 cols
+     ≥1280 xl   4 cols
+     ≥1536 2xl  5 cols */
 export function StyleGrid({ items, className }: StyleGridProps) {
   return (
     <div
       className={cn(
-        "columns-2 sm:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6",
+        "columns-2 lg:columns-3 xl:columns-4 2xl:columns-5",
         "gap-3 sm:gap-4 [column-fill:balance]",
         className,
       )}
