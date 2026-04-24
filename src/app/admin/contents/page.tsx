@@ -117,7 +117,7 @@ export default function AdminContents() {
 
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-xl font-semibold mb-6 text-text-neutral">콘텐츠 관리</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-6 text-text-neutral">콘텐츠 관리</h1>
 
       <div className="mb-6">
         <TabBar

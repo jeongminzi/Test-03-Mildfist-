@@ -145,7 +145,9 @@ export default function MyPage() {
         <div className="flex items-center gap-4 mb-8">
           <Avatar name={user.name} size="xl" />
           <div>
-            <h1 className="text-lg font-semibold text-text-neutral">{user.name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-text-neutral">
+              {user.name}
+            </h1>
             <p className="text-sm text-text-neutral-muted">{user.email}</p>
             <div className="flex items-center gap-1 mt-1">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"

@@ -11,6 +11,7 @@ import { Input } from "@/components/atoms/Input";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
 import { FileUploadArea } from "@/components/molecules/FileUploadArea";
+import { Stepper } from "@/components/molecules/Stepper";
 
 const CATEGORY_EMOJI: Record<string, string> = {
   상의: "👕",
@@ -183,18 +184,30 @@ function FittingPageInner() {
 
   const credits = user?.credits ?? 0;
   const insufficientCredits = credits < FITTING_COST;
-  const disabled = !myImage || !styleImage || selectedItems.length === 0 || fitLoading || insufficientCredits;
+  const photosReady = !!myImage && !!styleImage;
+  const itemsReady = photosReady && selectedItems.length > 0;
+  const stepIndex = fittingResult ? 2 : itemsReady ? 2 : photosReady ? 1 : 0;
+  const disabled = !photosReady || selectedItems.length === 0 || fitLoading || insufficientCredits;
 
   return (
     <div className="flex-1 bg-bg-default">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col gap-6">
           <div>
-            <h1 className="text-lg font-semibold text-text-neutral">가상 피팅</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-text-neutral">가상 피팅</h1>
             <p className="mt-1 text-sm text-text-neutral-muted">
               내 사진과 스타일 사진을 업로드한 후, 입혀볼 아이템을 선택하세요.
             </p>
           </div>
+
+          <Stepper
+            steps={[
+              { key: "upload", label: "사진 업로드" },
+              { key: "items", label: "아이템 선택" },
+              { key: "fit", label: "피팅" },
+            ]}
+            currentIndex={stepIndex}
+          />
 
           {/* Credit balance — sets expectations before the user invests time */}
           <Card
@@ -333,7 +346,7 @@ function FittingPageInner() {
             </div>
           )}
 
-          <Button onClick={handleFitting} disabled={disabled} loading={fitLoading} fullWidth>
+          <Button onClick={handleFitting} disabled={disabled} loading={fitLoading} fullWidth size="lg">
             {fitLoading ? "피팅 중... (최대 30초 소요)" : (
               <>
                 피팅 시작

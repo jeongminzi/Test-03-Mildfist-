@@ -116,7 +116,7 @@ export default function AdminMembers() {
 
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
-      <h1 className="text-xl font-semibold mb-6 text-text-neutral">회원 관리</h1>
+      <h1 className="text-2xl font-semibold tracking-tight mb-6 text-text-neutral">회원 관리</h1>
 
       <form onSubmit={handleSearch} className="flex gap-2 mb-6">
         <SearchBar
@@ -138,6 +138,7 @@ export default function AdminMembers() {
             <table className="w-full text-sm min-w-[700px]">
               <thead>
                 <tr className="bg-bg-neutral-weak text-text-neutral-muted">
+                  <th className="w-8"></th>
                   <th className="text-left px-4 py-3 font-medium">이름</th>
                   <th className="text-left px-4 py-3 font-medium">이메일</th>
                   <th className="text-left px-4 py-3 font-medium">가입일</th>
@@ -150,17 +151,35 @@ export default function AdminMembers() {
               <tbody>
                 {members.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-text-neutral-muted">
+                    <td colSpan={8} className="text-center py-12 text-text-neutral-muted">
                       검색 결과가 없습니다.
                     </td>
                   </tr>
                 ) : (
-                  members.map((m) => (
+                  members.map((m) => {
+                    const expanded = expandedId === m.id;
+                    return (
                     <Fragment key={m.id}>
                       <tr
                         className="cursor-pointer transition-colors border-t border-border-muted hover:bg-bg-neutral-weak"
                         onClick={() => toggleExpand(m.id)}
+                        aria-expanded={expanded}
                       >
+                        <td className="pl-4 py-3 w-8">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className={`text-text-neutral-subtle transition-transform ${expanded ? "rotate-90" : ""}`}
+                          >
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <Avatar name={m.name} size="sm" />
@@ -192,9 +211,9 @@ export default function AdminMembers() {
                         </td>
                       </tr>
 
-                      {expandedId === m.id && (
+                      {expanded && (
                         <tr>
-                          <td colSpan={7} className="bg-bg-neutral-weak border-t border-border-muted">
+                          <td colSpan={8} className="bg-bg-neutral-weak border-t border-border-muted">
                             {detailLoading ? (
                               <div className="flex items-center justify-center py-8">
                                 <Spinner size="sm" />
@@ -262,7 +281,8 @@ export default function AdminMembers() {
                         </tr>
                       )}
                     </Fragment>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

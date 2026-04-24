@@ -115,6 +115,20 @@ export default function HomePage() {
             }
             title="아직 업로드된 스타일이 없습니다"
             description="첫 스타일을 올려서 다른 사용자들과 공유해 보세요."
+            action={
+              <Button
+                size="lg"
+                onClick={() => {
+                  if (!user) {
+                    router.push("/login?redirect=/");
+                    return;
+                  }
+                  fileInputRef.current?.click();
+                }}
+              >
+                스타일 올리기
+              </Button>
+            }
           />
         ) : (
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-4" style={{ columnFill: "balance" }}>
@@ -131,9 +145,9 @@ export default function HomePage() {
                 <Link
                   key={style.id}
                   href={`/style/${style.id}`}
-                  className="block mb-4 break-inside-avoid no-underline group"
+                  className="block mb-4 break-inside-avoid no-underline group transition-transform hover:-translate-y-0.5"
                 >
-                  <div className="overflow-hidden relative rounded-card bg-bg-neutral-weak">
+                  <div className="overflow-hidden relative rounded-card bg-bg-neutral-weak transition-shadow group-hover:shadow-card">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={style.image_url}

@@ -15,7 +15,7 @@ export default function TermsPage() {
           돌아가기
         </Link>
 
-        <h1 className="text-xl font-semibold mb-6 text-text-neutral">이용약관</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-6 text-text-neutral">이용약관</h1>
 
         <div className="flex flex-col gap-6 text-sm text-text-neutral-muted leading-relaxed">
           <section>

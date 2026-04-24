@@ -41,6 +41,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       className={cn(
         "inline-flex items-center justify-center font-medium rounded-pill transition-colors cursor-pointer disabled:cursor-not-allowed",
+        "outline-none focus-visible:ring-2 focus-visible:ring-border-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-default",
         variantClass[variant],
         sizeClass[size],
         fullWidth && "w-full",

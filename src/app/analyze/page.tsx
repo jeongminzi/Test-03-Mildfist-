@@ -89,7 +89,9 @@ export default function AnalyzePage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col gap-6">
           <div>
-            <h1 className="text-lg font-semibold text-text-neutral">패션 아이템 인식</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-text-neutral">
+              패션 아이템 인식
+            </h1>
             <p className="mt-1 text-sm text-text-neutral-muted">
               사진을 업로드하면 AI가 착용한 패션 아이템을 분석합니다.
             </p>
@@ -107,7 +109,7 @@ export default function AnalyzePage() {
             />
           )}
 
-          <Button onClick={handleAnalyze} disabled={!image} loading={loading} fullWidth>
+          <Button onClick={handleAnalyze} disabled={!image} loading={loading} fullWidth size="lg">
             {loading ? "분석 중..." : "분석하기"}
           </Button>
 
