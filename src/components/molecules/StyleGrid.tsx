@@ -11,20 +11,24 @@ export interface StyleGridProps {
    so the images dominate, like Midjourney's explore grid. The card itself
    handles its own bottom margin via mb-3/mb-4 + break-inside-avoid. */
 export function StyleGrid({ items, className }: StyleGridProps) {
-  /* From md up we switch from a fixed column count to a column-WIDTH
-     constraint (CSS columns: 16rem). The browser then packs as many
-     ~256px columns as the viewport can fit, so wide monitors fill out
-     instead of leaving empty rails. Mobile and sm keep an explicit
-     count to guarantee at least 2 / 3 columns at small widths.
-       <640      columns-2          → ~158px
-       ≥640 sm   columns-3          → ~186px
-       ≥768 md   column-width:16rem → 3 cols at 768, 4 at 1024,
-                                       5 at 1280, 6 at 1536, 7 at ~1800,
-                                       8 at ~2050, … fills any monitor */
+  /* Tailwind's `columns-[…]` was being parsed as column-count, not
+     column-width, so wide monitors stayed at 3 columns. Use the
+     explicit CSS property via arbitrary-property syntax instead:
+       md:[column-width:14rem] → browser packs as many ~224px columns
+       as the viewport allows, automatically.
+     Mobile and sm keep explicit counts so small widths get at least 2/3.
+
+     Expected packing (after subtracting page padding ~80px):
+       768   md   ~3 cols   ~218px
+       1024  lg   ~4 cols   ~221px
+       1280  xl   ~5 cols   ~224px
+       1536  2xl  ~6 cols   ~225px
+       1900       ~7-8 cols ~228px
+       2560       ~10 cols  ~228px */
   return (
     <div
       className={cn(
-        "columns-2 sm:columns-3 md:columns-[16rem]",
+        "columns-2 sm:columns-3 md:[column-width:14rem]",
         "gap-4 sm:gap-6 [column-fill:balance]",
         className,
       )}
