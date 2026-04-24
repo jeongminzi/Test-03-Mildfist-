@@ -17,10 +17,10 @@ export function StyleGrid({ items, className }: StyleGridProps) {
       <div
         className={cn(
           "grid",
-          /* Smaller cards: more columns at every breakpoint, shorter
-             auto-rows. Cards now read ~160-200px tall instead of 240+. */
-          "grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8",
-          "[grid-auto-rows:160px] sm:[grid-auto-rows:180px]",
+          /* Larger cards again: pull column count down a step, push
+             auto-rows up to ~220-260px so cards read substantial. */
+          "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+          "[grid-auto-rows:220px] sm:[grid-auto-rows:260px]",
           "gap-1 sm:gap-1.5",
           /* Last child stretches to the end of its row → no holes. */
           "[&>*:last-child]:[grid-column-end:-1]",
