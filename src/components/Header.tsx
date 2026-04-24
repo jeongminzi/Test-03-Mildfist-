@@ -131,13 +131,13 @@ export default function Header() {
           if (!q) return;
           toast.show(`"${q}" 검색은 곧 지원됩니다`, { tone: "informative" });
         }}
-        className="flex-1 max-w-md hidden sm:block"
+        className="flex-1 max-w-2xl hidden sm:block"
       >
         <SearchBar name="q" placeholder="스타일 검색..." />
       </form>
 
-      {/* Right: Auth */}
-      <div className="flex items-center gap-3 shrink-0">
+      {/* Right: Auth — pinned to the right edge so wide viewports stay aligned */}
+      <div className="flex items-center gap-3 shrink-0 ml-auto">
         {user ? (
           <DropdownMenu
             align="end"
