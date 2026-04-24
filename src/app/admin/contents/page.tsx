@@ -157,7 +157,7 @@ export default function AdminContents() {
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={c.image_url}
-                          alt="Style"
+                          alt={`${c.user_name}님의 스타일`}
                           className="w-full h-[140px] object-cover bg-bg-neutral-weak"
                         />
                         {c.is_hidden === 1 && (
@@ -216,7 +216,7 @@ export default function AdminContents() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={r.style_image}
-                        alt="Reported style"
+                        alt="신고된 스타일 미리보기"
                         className="shrink-0 w-14 h-14 rounded-md object-cover bg-bg-neutral-weak"
                       />
                       <div className="flex-1 min-w-0">

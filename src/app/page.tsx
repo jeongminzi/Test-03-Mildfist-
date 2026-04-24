@@ -151,7 +151,7 @@ export default function HomePage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={style.image_url}
-                      alt={`Style by ${style.user_name}`}
+                      alt={`${style.user_name}님의 스타일`}
                       className="w-full object-cover min-h-[180px]"
                     />
                     <div

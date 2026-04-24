@@ -189,6 +189,22 @@ function FittingPageInner() {
   const stepIndex = fittingResult ? 2 : itemsReady ? 2 : photosReady ? 1 : 0;
   const disabled = !photosReady || selectedItems.length === 0 || fitLoading || insufficientCredits;
 
+  const retrySameInputs = () => {
+    setFittingResult(null);
+    setFitError(null);
+  };
+
+  const startOver = () => {
+    setMyImage(null);
+    setMyPreview(null);
+    setStyleImage(null);
+    setStylePreview(null);
+    setRecognizedItems([]);
+    setSelectedItems([]);
+    setFittingResult(null);
+    setFitError(null);
+  };
+
   return (
     <div className="flex-1 bg-bg-default">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
@@ -246,7 +262,7 @@ function FittingPageInner() {
               {myPreview ? (
                 <div className="flex justify-center p-3 rounded-card bg-bg-neutral-weak">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={myPreview} alt="My photo" className="max-h-48 object-contain rounded-lg" />
+                  <img src={myPreview} alt="내 사진 미리보기" className="max-h-48 object-contain rounded-lg" />
                 </div>
               ) : (
                 <FileUploadArea
@@ -261,7 +277,7 @@ function FittingPageInner() {
               {stylePreview ? (
                 <div className="flex justify-center p-3 rounded-card bg-bg-neutral-weak">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={stylePreview} alt="Style" className="max-h-48 object-contain rounded-lg" />
+                  <img src={stylePreview} alt="스타일 사진 미리보기" className="max-h-48 object-contain rounded-lg" />
                 </div>
               ) : (
                 <FileUploadArea
@@ -346,37 +362,58 @@ function FittingPageInner() {
             </div>
           )}
 
-          <Button onClick={handleFitting} disabled={disabled} loading={fitLoading} fullWidth size="lg">
-            {fitLoading ? "피팅 중... (최대 30초 소요)" : (
-              <>
-                피팅 시작
-                <span className="text-xs opacity-70 ml-1">(1 크레딧)</span>
-              </>
-            )}
-          </Button>
+          {!fittingResult && (
+            <Button onClick={handleFitting} disabled={disabled} loading={fitLoading} fullWidth size="lg">
+              {fitLoading ? "피팅 중... (최대 30초 소요)" : (
+                <>
+                  피팅 시작
+                  <span className="text-xs opacity-70 ml-1">(1 크레딧)</span>
+                </>
+              )}
+            </Button>
+          )}
 
           {fitError && <p className="text-sm text-text-critical">{fitError}</p>}
 
           {fittingResult && (
-            <div className="flex flex-col items-center gap-4">
-              <h3 className="text-sm font-semibold self-start text-text-neutral">피팅 결과</h3>
-              <div className="w-full overflow-hidden rounded-card border border-border-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={fittingResult} alt="피팅 결과" className="w-full object-contain" />
+            <div className="flex flex-col gap-4 mt-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-bg-positive-weak text-text-positive">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+                <h3 className="text-base font-semibold text-text-neutral">피팅 완료</h3>
               </div>
-              <a
-                href={fittingResult}
-                download="mildfist-fitting-result.png"
-                className="inline-flex items-center gap-2 text-xs font-medium no-underline px-5 py-2 rounded-lg bg-bg-neutral-muted text-text-neutral hover:bg-bg-neutral-weak"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                이미지 다운로드
-              </a>
+              <div className="w-full overflow-hidden rounded-card border border-border-muted bg-bg-neutral-weak">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={fittingResult} alt="가상 피팅 결과 이미지" className="w-full object-contain" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={fittingResult}
+                  download="mildfist-fitting-result.png"
+                  className="inline-flex items-center justify-center gap-2 h-12 px-6 text-base font-medium no-underline rounded-pill bg-bg-brand-solid text-text-inverted hover:bg-bg-brand-solid-pressed transition-colors outline-none focus-visible:ring-2 focus-visible:ring-border-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg-default"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  이미지 다운로드
+                </a>
+                <Button variant="secondary" size="lg" onClick={retrySameInputs}>
+                  같은 입력으로 다시
+                </Button>
+                <Button variant="ghost" size="lg" onClick={startOver}>
+                  처음부터
+                </Button>
+              </div>
+              <p className="text-xs text-text-neutral-subtle">
+                AI가 생성한 결과로 실제 착용 모습과 다를 수 있습니다.
+              </p>
             </div>
           )}
         </div>

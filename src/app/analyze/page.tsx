@@ -5,6 +5,7 @@ import { resizeAndConvertToBase64 } from "@/lib/image-utils";
 import { Button } from "@/components/atoms/Button";
 import { Spinner } from "@/components/atoms/Spinner";
 import { Card } from "@/components/molecules/Card";
+import { EmptyState } from "@/components/molecules/EmptyState";
 import { FileUploadArea } from "@/components/molecules/FileUploadArea";
 
 interface FashionItem {
@@ -33,6 +34,7 @@ export default function AnalyzePage() {
   const [items, setItems] = useState<FashionItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasAnalyzed, setHasAnalyzed] = useState(false);
   const [searchLoading, setSearchLoading] = useState<Record<number, boolean>>({});
 
   const handleFile = useCallback(async (file: File) => {
@@ -40,6 +42,7 @@ export default function AnalyzePage() {
     setImage(await fileToBase64(file));
     setError(null);
     setItems([]);
+    setHasAnalyzed(false);
   }, []);
 
   const handleAnalyze = useCallback(async () => {
@@ -58,6 +61,7 @@ export default function AnalyzePage() {
       }
       const data = await res.json();
       setItems(data.items ?? data);
+      setHasAnalyzed(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "알 수 없는 오류");
     } finally {
@@ -100,7 +104,7 @@ export default function AnalyzePage() {
           {preview ? (
             <div className="flex justify-center p-4 rounded-card bg-bg-neutral-weak">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview} alt="Preview" className="max-h-64 object-contain rounded-lg" />
+              <img src={preview} alt="업로드한 이미지 미리보기" className="max-h-64 object-contain rounded-lg" />
             </div>
           ) : (
             <FileUploadArea
@@ -114,6 +118,25 @@ export default function AnalyzePage() {
           </Button>
 
           {error && <p className="text-sm text-text-critical">{error}</p>}
+
+          {hasAnalyzed && !loading && items.length === 0 && !error && (
+            <EmptyState
+              icon={
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              }
+              title="패션 아이템이 인식되지 않았습니다"
+              description="옷이 또렷하게 보이는 정면 사진으로 다시 시도해 보세요."
+              action={
+                <Button variant="secondary" onClick={handleAnalyze}>
+                  다시 분석
+                </Button>
+              }
+            />
+          )}
 
           {items.length > 0 && (
             <div className="flex flex-col gap-3">

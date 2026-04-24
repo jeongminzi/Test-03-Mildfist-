@@ -196,7 +196,7 @@ export default function MyPage() {
                       <Link key={s.id} href={`/style/${s.id}`} className="block no-underline">
                         <div className="overflow-hidden rounded-card bg-bg-neutral-weak">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={s.image_url} alt="Style" className="w-full object-cover min-h-[140px]" />
+                          <img src={s.image_url} alt="내 스타일" className="w-full object-cover min-h-[140px]" />
                         </div>
                         <div className="mt-1.5 px-1">
                           <LikeButton liked={s.likes_count > 0} count={s.likes_count} />
@@ -234,7 +234,7 @@ export default function MyPage() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={f.result_image}
-                            alt="Fitting result"
+                            alt="피팅 결과 이미지"
                             className="w-20 h-20 object-cover rounded-lg shrink-0"
                           />
                         )}

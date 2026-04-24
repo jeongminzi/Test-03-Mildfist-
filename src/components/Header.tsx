@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { DropdownMenu, DropdownMenuItem } from "@/components/molecules/DropdownMenu";
+import { cn } from "@/lib/cn";
 
 const ChevronDown = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -51,8 +53,14 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const PRIMARY_NAV: { href: string; label: string }[] = [
+  { href: "/analyze", label: "아이템 인식" },
+  { href: "/fitting", label: "가상 피팅" },
+];
+
 export default function Header() {
   const { user, logout } = useAuth();
+  const pathname = usePathname();
 
   const items: DropdownMenuItem[] = user
     ? [
@@ -66,8 +74,10 @@ export default function Header() {
       ]
     : [];
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 py-3 bg-bg-default border-b border-border-muted">
+    <header className="sticky top-0 z-50 flex items-center gap-6 px-4 sm:px-6 py-3 bg-bg-default border-b border-border-muted">
       {/* Left: Logo */}
       <Link href="/" className="flex items-center gap-2 no-underline shrink-0">
         <div className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-bg-brand-solid">
@@ -82,6 +92,29 @@ export default function Header() {
           MildFist
         </span>
       </Link>
+
+      {/* Center: Primary nav (desktop only) */}
+      {user && (
+        <nav className="hidden md:flex items-center gap-1">
+          {PRIMARY_NAV.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "no-underline px-3 py-1.5 text-sm font-medium rounded-pill transition-colors",
+                  active
+                    ? "bg-bg-brand-weak text-text-brand"
+                    : "text-text-neutral-muted hover:bg-bg-neutral-weak hover:text-text-neutral",
+                )}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      )}
 
       {/* Right: Auth */}
       <div className="flex items-center gap-3 shrink-0 ml-auto">

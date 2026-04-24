@@ -233,7 +233,7 @@ export default function AdminMembers() {
                                           {/* eslint-disable-next-line @next/next/no-img-element */}
                                           <img
                                             src={s.image_url}
-                                            alt="Style"
+                                            alt="회원 스타일 미리보기"
                                             className={
                                               "w-full h-[60px] object-cover rounded-md " +
                                               (s.is_hidden ? "opacity-40" : "")
