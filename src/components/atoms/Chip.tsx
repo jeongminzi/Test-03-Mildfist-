@@ -16,7 +16,7 @@ export function Chip({ selected, leadingIcon, className, children, ...rest }: Ch
       className={cn(
         "inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-pill transition-colors cursor-pointer",
         selected
-          ? "bg-bg-brand-solid text-text-inverted"
+          ? "bg-bg-brand-weak text-text-brand"
           : "bg-bg-neutral-muted text-text-neutral hover:bg-bg-neutral-weak",
         className,
       )}
