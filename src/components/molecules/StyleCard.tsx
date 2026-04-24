@@ -28,10 +28,10 @@ export function StyleCard({ item, className }: StyleCardProps) {
   const { href, imageUrl, userName, userProfile, likesCount, itemNames = [] } = item;
 
   return (
-    <div className={cn("mb-1 sm:mb-1.5 break-inside-avoid", className)}>
+    <div className={cn("mb-3 sm:mb-4 break-inside-avoid", className)}>
       <Link
         href={href}
-        className="group relative block no-underline overflow-hidden bg-bg-neutral-weak"
+        className="group relative block no-underline overflow-hidden rounded-2xl bg-bg-neutral-weak"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
