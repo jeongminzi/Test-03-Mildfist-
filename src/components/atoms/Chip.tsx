@@ -17,7 +17,7 @@ export function Chip({ selected, leadingIcon, className, children, ...rest }: Ch
         "inline-flex items-center gap-1.5 h-9 px-4 text-sm font-medium rounded-pill transition-colors cursor-pointer border",
         selected
           ? "bg-bg-brand-weak text-text-brand border-border-brand"
-          : "bg-bg-neutral-muted text-text-neutral border-transparent hover:bg-bg-neutral-weak",
+          : "bg-bg-neutral-weak text-text-neutral border-transparent hover:bg-bg-neutral-muted",
         className,
       )}
       {...rest}
